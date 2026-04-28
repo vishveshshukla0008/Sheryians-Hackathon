@@ -1,0 +1,122 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@layer base {
+  body {
+    @apply font-sans overflow-x-hidden antialiased bg-bg text-text;
+  }
+}
+
+@layer theme {
+  :root {
+    --color-primary: #ff2525;
+    --color-primary-foreground: #ffffff;
+
+    --color-bg: #ffffff;
+    --color-bg-surface: #f6f6f6;
+    --color-bg-muted: #f1f5f9;
+
+    --color-text: #0f172a;
+    --color-text-muted: #64748b;
+
+    --color-border: #e2e8f0;
+    --color-input: #e2e8f0;
+    --color-ring: #f59e0b;
+
+    --color-error: #ef4444;
+    --color-success: #10b981;
+  }
+
+  [data-theme="dark"] {
+    --color-primary: #ff2525e3;
+
+    --color-bg: #1c1d1e;
+    --color-bg-surface: #172138;
+    --color-bg-muted: #1e293b;
+
+    --color-text: #f8fafc;
+    --color-text-muted: #94a3b8;
+
+    --color-border: #1e293b;
+    --color-input: #1e293b;
+    --color-ring: #f59e0b;
+  }
+}
+
+@theme inline {
+  --color-primary: var(--color-primary);
+  --color-primary-foreground: var(--color-primary-foreground);
+  --color-bg: var(--color-bg);
+  --color-bg-surface: var(--color-bg-surface);
+  --color-bg-muted: var(--color-bg-muted);
+  --color-text: var(--color-text);
+  --color-text-muted: var(--color-text-muted);
+  --color-border: var(--color-border);
+  --color-input: var(--color-input);
+  --color-ring: var(--color-ring);
+  --color-error: var(--color-error);
+  --color-success: var(--color-success);
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+
+  --animate-slow-spin: slow-spin 20s linear infinite;
+  --animate-marquee: marquee 30s linear infinite;
+  --animate-marquee-reverse: marquee-reverse 30s linear infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-fade-in-up: fade-in-up 0.8s ease-out forwards;
+
+  @keyframes slow-spin {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @keyframes marquee-reverse {
+    from {
+      transform: translateX(-50%);
+    }
+
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
