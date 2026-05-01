@@ -1,6 +1,7 @@
 import { Outlet } from "react-router";
 import { Toaster } from "react-hot-toast";
 import Navbar from "../shared/components/Navbar";
+import Footer from "../shared/components/Footer";
 
 const RootLayout = () => {
   const theme = document.body.getAttribute("data-theme");
@@ -21,6 +22,7 @@ const RootLayout = () => {
       <main className="relative z-10">
         <Outlet />
       </main>
+      <Footer />
     </div>
   );
 };
