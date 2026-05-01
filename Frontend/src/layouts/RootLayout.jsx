@@ -2,9 +2,10 @@ import { Outlet } from "react-router";
 import { Toaster } from "react-hot-toast";
 import Navbar from "../shared/components/Navbar";
 import Footer from "../shared/components/Footer";
+import { useTheme } from "../features/Theme/hooks/useTheme";
 
 const RootLayout = () => {
-  const theme = document.body.getAttribute("data-theme");
+  const { theme } = useTheme();
 
   return (
     <div className="bg-bg text-text min-h-screen">
