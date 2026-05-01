@@ -1,12 +1,12 @@
 import { Outlet } from "react-router";
 import { Toaster } from "react-hot-toast";
+import Navbar from "../shared/components/Navbar";
 
 const RootLayout = () => {
   const theme = document.body.getAttribute("data-theme");
 
   return (
     <div className="bg-bg text-text min-h-screen">
-      <nav>Navbar</nav>
       <Toaster
         position="top-right"
         toastOptions={{
@@ -17,7 +17,8 @@ const RootLayout = () => {
           },
         }}
       />
-      <main className="relative z-10 pt-20">
+      <Navbar />
+      <main className="relative z-10">
         <Outlet />
       </main>
     </div>
