@@ -1,5 +1,4 @@
 import React from 'react'
-<<<<<<< HEAD
 import { Link } from 'react-router'
 import { SiOpslevel } from 'react-icons/si'
 import { FiArrowRight } from 'react-icons/fi'
@@ -104,13 +103,4 @@ const Footer = () => {
   )
 }
 
-=======
-
-const Footer = () => {
-  return (
-    <div>Footer</div>
-  )
-}
-
->>>>>>> feature/about
 export default Footer
