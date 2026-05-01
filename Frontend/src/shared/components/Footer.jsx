@@ -20,7 +20,7 @@ const Footer = () => {
               <div className="w-12 h-12 rounded-xl bg-primary text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300">
                 <SiOpslevel className="text-2xl" />
               </div>
-              <span className="tracking-tight">MayDayOps</span>
+              <span className="tracking-light">MayDayOps</span>
             </Link>
             <p className="text-text-muted text-lg mb-8 leading-relaxed font-medium">
               The incident response platform for modern engineering teams. Turn production chaos into controlled, autonomous recovery.
@@ -88,7 +88,7 @@ const Footer = () => {
           </div>
 
               <div className="logo h-full w-full flex items-center justify-center text-text-muted">
-                <SiOpslevel className="text-9xl" />
+                <SiOpslevel className="text-9xl text-primary/90" />
               </div>
         </div>
 
