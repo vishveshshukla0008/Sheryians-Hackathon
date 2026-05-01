@@ -471,14 +471,14 @@ const HomePage = () => {
             </div>
           </div>
 
-          <div className="relative rounded-3xl p-10 md:p-16 text-text shadow-[0_20px_50px_rgba(255,37,37,0.1)] border border-border bg-bg overflow-hidden group">            
+          <div className="relative rounded-3xl p-10 md:p-16 text-text shadow-[0_20px_50px_rgba(255,37,37,0.1)] border border-border bg-bg overflow-hidden group">
             {/* Glowing Orbs */}
             <div className="absolute -top-32 -left-32 w-80 h-80 bg-primary rounded-full blur-[100px] z-0 group-hover:bg-primary/30 group-hover:scale-110 transition-all duration-700 pointer-events-none"></div>
             <div className="absolute -bottom-32 -right-32 w-80 h-80 bg-primary/10 rounded-full blur-[100px] z-0 group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-700 pointer-events-none"></div>
-            
+
             {/* Texture/Pattern */}
             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5 mix-blend-overlay z-0 pointer-events-none"></div>
-            
+
             <div className="relative z-10 flex flex-col items-center">
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 tracking-tight text-center">
                 Be Ready Before the Next <span className="text-primary">Incident</span>
@@ -486,7 +486,7 @@ const HomePage = () => {
               <p className="text-lg md:text-2xl text-text-muted mb-10 max-w-2xl mx-auto text-center leading-relaxed">
                 Stop reacting to chaos and start orchestrating recovery. Deploy MayDayOps and secure your systems in under 10 minutes.
               </p>
-              
+
               <div className="flex flex-col sm:flex-row gap-6 items-center">
                 <Link
                   to="/signup"

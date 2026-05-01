@@ -213,7 +213,7 @@ const About = () => {
                         </div>
                     </div>
 
-                    {/* TEXT RIGHT */}
+                   
                     <div className="animate-fade-in-up">
                         <p className="text-primary font-semibold mb-2 uppercase tracking-wider">
                             OUR VISION
