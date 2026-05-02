@@ -279,7 +279,7 @@ const About = () => {
                                 className="group relative bg-bg border border-border rounded-2xl p-6 overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:border-primary/60"
                             >
                                 {/* glow effect */}
-                                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+                                <div className="absolute inset-0 bg-linear-to-br from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
 
                                 <h3 className="text-2xl font-bold mb-2 relative z-10">
                                     {item.title}

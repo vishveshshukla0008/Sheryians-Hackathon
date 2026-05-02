@@ -195,7 +195,7 @@ const HomePage = () => {
             <div className="text-center max-w-5xl mx-auto animate-fade-in-up pt-30">
               <h1 className="text-5xl md:text-7xl lg:text-8xl text-text tracking-tight mb-8 leading-tight font-extralight">
                 Turn Production{" "}
-                <span className="bg-primary text-text font-bold border border-border rounded-lg">
+                <span className="bg-primary text-white font-bold border border-border rounded-lg">
                   Chaos
                 </span>{" "}
                 <span className="font-mono italic">Into</span>{" "}
@@ -265,7 +265,7 @@ const HomePage = () => {
               <div
                 key={i}
                 className="bg-bg p-8 rounded-2xl border border-border hover:border-primary hover:shadow-lg transition-all  group">
-                <div className="w-14 h-14 bg-error/10 text-error rounded-xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
+                <div className="w-14 h-14 bg-primary/10 text-primary rounded-xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
                   {item.icon}
                 </div>
                 <h3 className="text-xl font-bold text-text mb-3">
@@ -481,10 +481,12 @@ const HomePage = () => {
 
             <div className="relative z-10 flex flex-col items-center">
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 tracking-tight text-center">
-                Be Ready Before the Next <span className="text-primary">Incident</span>
+                Be Ready Before the Next{" "}
+                <span className="text-primary">Incident</span>
               </h2>
               <p className="text-lg md:text-2xl text-text-muted mb-10 max-w-2xl mx-auto text-center leading-relaxed">
-                Stop reacting to chaos and start orchestrating recovery. Deploy MayDayOps and secure your systems in under 10 minutes.
+                Stop reacting to chaos and start orchestrating recovery. Deploy
+                MayDayOps and secure your systems in under 10 minutes.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-6 items-center">
@@ -493,7 +495,9 @@ const HomePage = () => {
                   className="relative overflow-hidden  inline-flex items-center justify-center gap-2 bg-primary  px-10 py-5 rounded-full font-bold text-lg md:text-xl transition-all hover:scale-105 shadow-xl hover:shadow-[0_0_40px_rgba(255,37,37,0.4)]  border border-transparent">
                   {/* Button shine effect */}
                   <span className="absolute inset-0 w-full h-full bg-linear-to-r from-transparent via-bg/20 to-transparent -translate-x-full group-hover/btn:animate-[marquee_1s_ease-in-out]"></span>
-                  <span className="relative z-10  flex items-center gap-2">Start Free Trial <FiArrowRight /></span>
+                  <span className="relative z-10 flex items-center gap-2 text-white">
+                    Start Free Trial <FiArrowRight />
+                  </span>
                 </Link>
               </div>
             </div>

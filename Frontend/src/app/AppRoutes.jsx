@@ -1,5 +1,6 @@
-import { BrowserRouter, Route, Routes } from "react-router";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router";
 import RootLayout from "../layouts/RootLayout";
+import IncidentLayout from "../layouts/IncidentLayout";
 import LoginPage from "../features/Authentication/pages/LoginPage";
 import SignupPage from "../features/Authentication/pages/SignupPage";
 import HomePage from "../pages/HomePage";
@@ -20,7 +21,11 @@ import EmailNotifications from "../pages/Docs/integrations/EmailNotification";
 import SlackIntegration from "../pages/Docs/integrations/SlackIntegration";
 import Authentication from "../pages/Docs/developer/Authentication";
 import ErrorCodes from "../pages/Docs/developer/ErrorCodes";
-import RateLimits from "../pages/Docs/developer/RateLimits";
+import RateLimits from "../pages/Docs/developer/RateLimits";import IncidentAdmin from "../features/Incidents/pages/IncidentAdmin";
+import IncidentDashboard from "../features/Incidents/pages/IncidentDashboard";
+import IncidentDetails from "../features/Incidents/pages/IncidentDetails";
+import IncidentStatusPage from "../features/Incidents/pages/IncidentStatusPage";
+import TeamManagement from "../features/Incidents/pages/TeamManagement";
 
 const AppRoutes = () => {
   return (
@@ -54,6 +59,14 @@ const AppRoutes = () => {
 
           </Route>
           </Route>
+        <Route path="/admin" element={<IncidentLayout />}>
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<IncidentDashboard />} />
+          <Route path="incidents" element={<IncidentAdmin />} />
+          <Route path="incidents/:id" element={<IncidentDetails />} />
+          <Route path="status" element={<IncidentStatusPage />} />
+          <Route path="team" element={<TeamManagement />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

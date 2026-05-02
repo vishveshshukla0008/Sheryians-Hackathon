@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import { Link, NavLink } from "react-router";
-import { FiMenu, FiX } from "react-icons/fi";
+import { FiMenu, FiX, FiSun, FiMoon } from "react-icons/fi";
 import { SiOpslevel } from "react-icons/si";
+import { useTheme } from "../../features/Theme/hooks/useTheme";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   const navLinks = [
     { name: "Home", path: "/" },
-    { name: "Incidents", path: "/incidents" },
+    { name: "Incidents", path: "/admin/incidents" },
     { name: "Status", path: "/status" },
     { name: "Docs", path: "/docs" },
     { name: "About Us", path: "/about" },
@@ -46,6 +48,13 @@ const Navbar = () => {
                 </NavLink>
               ))}
             </div>
+            <button
+              onClick={toggleTheme}
+              className="p-2 text-text-muted hover:text-text transition-all outline-none flex items-center justify-center bg-bg cursor-pointer"
+              aria-label="Toggle Theme"
+            >
+              {theme === "dark" ? <FiSun size={20} className="text-ring" /> : <FiMoon size={20} className="text-text" />}
+            </button>
             <Link
               to="/dashboard"
               className="bg-primary text-primary-foreground px-5 py-2 rounded-full font-semibold sm:text-lg hover:bg-primary/90 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
@@ -53,8 +62,15 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden flex items-center">
+          {/* Mobile menu button & Theme Toggler */}
+          <div className="md:hidden flex items-center gap-2">
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-full text-text-muted hover:text-text hover:bg-bg-surface transition-all focus:outline-none border border-border flex items-center justify-center bg-bg"
+              aria-label="Toggle Theme"
+            >
+              {theme === "dark" ? <FiSun size={20} className="text-ring" /> : <FiMoon size={20} className="text-text" />}
+            </button>
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="text-text-muted hover:text-text focus:outline-none p-2">
