@@ -22,18 +22,18 @@
 
   --color-border: #d6d6d6;
   --color-input: #efeeeef6;
-  --color-ring: #f59e0b;
+  --color-ring: #ffa200;
 
-  --color-error: #ef4444;
-  --color-success: #10b981;
+  --color-error: #ee0000;
+  --color-success: #1fb401;
 }
 
-[data-theme="light"] {
+[data-theme="dark"] {
   --color-primary: #ff5709;
-
+  --color-primary-foreground: #ffffff;
   --color-bg: #1c1d1e;
-  --color-bg-surface: #172138;
-  --color-bg-muted: #1e293b;
+  --color-bg-surface: #353536;
+  --color-bg-muted: #000000;
 
   --color-text: #f8fafc;
   --color-text-muted: #d9dadb;
@@ -41,6 +41,7 @@
   --color-border: #666666;
   --color-input: #2e2f30;
   --color-ring: #f59e0b;
+  --color-success: #26a737;
 }
 
 @theme inline {
