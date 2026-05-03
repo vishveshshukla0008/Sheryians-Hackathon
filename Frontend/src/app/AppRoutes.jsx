@@ -4,6 +4,7 @@ import RootLayout from "../layouts/RootLayout";
 import IncidentLayout from "../layouts/IncidentLayout";
 import LoginPage from "../features/Authentication/pages/LoginPage";
 import SignupPage from "../features/Authentication/pages/SignupPage";
+import VerifyEmailPage from "../features/Authentication/components/VerifyEmailPage";
 import HomePage from "../pages/HomePage";
 import About from "../pages/About";
 import IncidentAdmin from "../features/Incidents/pages/IncidentAdmin";
@@ -12,7 +13,7 @@ import IncidentDetails from "../features/Incidents/pages/IncidentDetails";
 import IncidentStatusPage from "../features/Incidents/pages/IncidentStatusPage";
 import TeamManagement from "../features/Incidents/pages/TeamManagement";
 
-import DocsLayout from "../pages/Docs/components/DocsLayout";
+import DocsLayout from "../layouts/DocsLayout";
 
 import Docs from "../pages/Docs/getting started/Docs";
 import QuickStart from "../pages/Docs/getting started/QuickStart";
@@ -38,13 +39,33 @@ const AppRoutes = () => {
   return (
     <BrowserRouter>
       <Routes>
-
         {/* ROOT */}
         <Route path="/" element={<RootLayout />}>
           <Route index element={<HomePage />} />
           <Route path="login" element={<LoginPage />} />
-          <Route path="register" element={<SignupPage />} />
+          <Route path="signup" element={<SignupPage />} />
+          <Route path="verify-email" element={<VerifyEmailPage />} />
           <Route path="about" element={<About />} />
+
+          {/* DOCS */}
+          <Route path="/docs" element={<DocsLayout />}>
+            <Route index element={<Docs />} />
+            <Route path="quick-start" element={<QuickStart />} />
+            <Route path="first-incident" element={<FirstIncident />} />
+            <Route path="incidents" element={<Incidents />} />
+            <Route path="workspaces" element={<Workspaces />} />
+            <Route path="members" element={<MembersRoles />} />
+            <Route path="timeline" element={<TimelineUpdates />} />
+            <Route path="status" element={<StatusPage />} />
+            <Route path="postmortem" element={<AIPostmortem />} />
+            <Route path="email" element={<EmailNotifications />} />
+            <Route path="slack" element={<SlackIntegration />} />
+            <Route path="api" element={<APIReference />} />
+            <Route path="auth" element={<Authentication />} />
+            <Route path="errors" element={<ErrorCodes />} />
+            <Route path="rate-limits" element={<RateLimits />} />
+            <Route path="sdk" element={<SDK />} />
+          </Route>
         </Route>
 
         {/* ADMIN */}
@@ -56,27 +77,6 @@ const AppRoutes = () => {
           <Route path="status" element={<IncidentStatusPage />} />
           <Route path="team" element={<TeamManagement />} />
         </Route>
-
-        {/* DOCS */}
-        <Route path="/docs" element={<DocsLayout />}>
-          <Route index element={<Docs />} />
-          <Route path="quick-start" element={<QuickStart />} />
-          <Route path="first-incident" element={<FirstIncident />} />
-          <Route path="incidents" element={<Incidents />} />
-          <Route path="workspaces" element={<Workspaces />} />
-          <Route path="members" element={<MembersRoles />} />
-          <Route path="timeline" element={<TimelineUpdates />} />
-          <Route path="status" element={<StatusPage />} />
-          <Route path="postmortem" element={<AIPostmortem />} />
-          <Route path="email" element={<EmailNotifications />} />
-          <Route path="slack" element={<SlackIntegration />} />
-          <Route path="api" element={<APIReference />} />
-          <Route path="auth" element={<Authentication />} />
-          <Route path="errors" element={<ErrorCodes />} />
-          <Route path="rate-limits" element={<RateLimits />} />
-          <Route path="sdk" element={<SDK />} />
-        </Route>
-
       </Routes>
     </BrowserRouter>
   );

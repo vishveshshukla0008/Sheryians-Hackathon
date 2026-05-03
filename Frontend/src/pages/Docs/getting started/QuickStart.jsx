@@ -1,6 +1,6 @@
 const QuickStart = () => {
   return (
-    <section className="py-24 relative overflow-hidden animate-fade-in-up">
+    <section className="py-24 pt-0 relative overflow-hidden animate-fade-in-up">
 
       {/* Heading */}
       <h1 className="text-4xl font-bold text-center mb-16">
@@ -16,7 +16,7 @@ const QuickStart = () => {
 
         {/* 🔥 vertical line */}
         <div className="absolute left-1/2 top-0 h-full w-[2px] 
-    bg-gradient-to-b from-transparent via-primary/40 to-transparent"></div>
+    bg-linear-to-b from-transparent via-primary/40 to-transparent"></div>
 
         {[
           {

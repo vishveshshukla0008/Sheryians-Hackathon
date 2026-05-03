@@ -3,7 +3,7 @@ import helmet from "helmet";
 import cors from "cors";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
-
+import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth.routes.js";
 import companyRoutes from "./routes/company.routes.js";
 import incidentRoutes from "./routes/incident.routes.js";
@@ -15,6 +15,7 @@ import contactRoutes from "./routes/contact.routes.js";
 import { notFound, errorHandler } from "./middleware/error.middleware.js";
 
 const app = express();
+app.use(cookieParser());
 
 app.use(helmet());
 app.use(
