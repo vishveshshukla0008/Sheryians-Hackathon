@@ -1,10 +1,12 @@
 import { BrowserRouter, Route, Routes, Navigate } from "react-router";
 
 import RootLayout from "../layouts/RootLayout";
+import Authlayout from "../layouts/Authlayout";
 import IncidentLayout from "../layouts/IncidentLayout";
 import LoginPage from "../features/Authentication/pages/LoginPage";
 import SignupPage from "../features/Authentication/pages/SignupPage";
-import VerifyEmailPage from "../features/Authentication/components/VerifyEmailPage";
+import ForgetPassword from "../features/Authentication/pages/ForgetPassword";
+import ResetPassword from "../features/Authentication/pages/ResetPassword";
 import HomePage from "../pages/HomePage";
 import About from "../pages/About";
 import IncidentAdmin from "../features/Incidents/pages/IncidentAdmin";
@@ -34,6 +36,7 @@ import SDK from "../pages/Docs/developer/SDK";
 import Authentication from "../pages/Docs/developer/Authentication";
 import ErrorCodes from "../pages/Docs/developer/ErrorCodes";
 import RateLimits from "../pages/Docs/developer/RateLimits";
+import VerifyEmailPage from "../features/Authentication/pages/VerifyEmailPage";
 
 const AppRoutes = () => {
   return (
@@ -42,9 +45,6 @@ const AppRoutes = () => {
         {/* ROOT */}
         <Route path="/" element={<RootLayout />}>
           <Route index element={<HomePage />} />
-          <Route path="login" element={<LoginPage />} />
-          <Route path="signup" element={<SignupPage />} />
-          <Route path="verify-email" element={<VerifyEmailPage />} />
           <Route path="about" element={<About />} />
 
           {/* DOCS */}
@@ -66,6 +66,14 @@ const AppRoutes = () => {
             <Route path="rate-limits" element={<RateLimits />} />
             <Route path="sdk" element={<SDK />} />
           </Route>
+        </Route>
+        {/* Auth Routes with AUTHLAYOUT */}
+        <Route element={<Authlayout />}>
+          <Route path="login" element={<LoginPage />} />
+          <Route path="signup" element={<SignupPage />} />
+          <Route path="forget-password" element={<ForgetPassword />} />
+          <Route path="reset-password" element={<ResetPassword />} />
+          <Route path="verify-email" element={<VerifyEmailPage />} />
         </Route>
 
         {/* ADMIN */}

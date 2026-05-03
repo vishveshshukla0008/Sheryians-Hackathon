@@ -21,4 +21,16 @@ export const authApi = {
         const response = await api.get(`/auth/verify/${token}`);
         return response;
     },
+    resendVerificationEmail: async (email) => {
+        const response = await api.post("/auth/resend-verification", { email });
+        return response;
+    },
+    forgotPassword: async (email) => {
+        const response = await api.post("/auth/forgot-password", { email });
+        return response;
+    },
+    resetPassword: async (payload) => {
+        const response = await api.post("/auth/reset-password", payload);
+        return response;
+    },
 }

@@ -80,5 +80,47 @@ export const useAuth = () => {
         }
     };
 
-    return { handleRegister, loginHandler, logoutHandler, getCurrentUser, handleVerifyAccount };
+    const handleResendVerification = async (email) => {
+        try {
+            dispatch(setAuthLoading(true));
+            const response = await authApi.resendVerificationEmail(email);
+            toast.success(response.message || "Verification email sent successfully!");
+            return response;
+        } catch (error) {
+            toast.error(error.message || "Failed to resend verification email");
+            return error;
+        } finally {
+            dispatch(setAuthLoading(false));
+        }
+    }
+
+    const handleForgotPasswordLinkSent = async (email) => {
+        try {
+            dispatch(setAuthLoading(true));
+            const response = await authApi.forgotPassword(email);
+            toast.success(response.message || "Password reset link sent successfully!");
+            return response;
+        } catch (error) {
+            toast.error(error.message || "Failed to send password reset link");
+            return error;
+        } finally {
+            dispatch(setAuthLoading(false));
+        }
+    };
+
+    const handleResetPassword = async ({ token, password, confirmPassword }) => {
+        try {
+            dispatch(setAuthLoading(true));
+            const response = await authApi.resetPassword({ token, password, confirmPassword });
+            toast.success(response.message || "Password reset successfully!");
+            return response;
+        } catch (error) {
+            toast.error(error.message || "Failed to reset password");
+            return Promise.reject(error);
+        } finally {
+            dispatch(setAuthLoading(false));
+        }
+    };
+
+    return { handleRegister, loginHandler, logoutHandler, getCurrentUser, handleResendVerification, handleVerifyAccount, handleForgotPasswordLinkSent, handleResetPassword };
 };

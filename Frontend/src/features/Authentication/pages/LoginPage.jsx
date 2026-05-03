@@ -6,6 +6,7 @@ import Input from "../../../shared/components/Input";
 import { FiMail, FiLock, FiShield } from "react-icons/fi";
 import { useAuth } from "../hook/useAuth";
 import { useSelector } from "react-redux";
+import Loader from "../../../shared/components/Loader";
 
 const LoginPage = () => {
   const { loginHandler } = useAuth();
@@ -34,9 +35,8 @@ const LoginPage = () => {
     }
   };
 
-  if (authLoading) return <div>Loading</div>;
+  // if (authLoading) return <Loader/>;
   if (user) return <Navigate to="/" replace />;
-
 
   return (
     <div className="min-h-screen flex bg-bg relative overflow-hidden w-full">
@@ -133,7 +133,7 @@ const LoginPage = () => {
                 />
                 <div className="flex justify-end mt-2">
                   <Link
-                    to="#"
+                    to="/forget-password"
                     className="text-sm font-semibold text-primary hover:text-primary/80 transition-colors hover:underline">
                     Forgot Password?
                   </Link>

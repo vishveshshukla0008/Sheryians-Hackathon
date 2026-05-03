@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, NavLink } from "react-router";
 import { FiMenu, FiX, FiSun, FiMoon } from "react-icons/fi";
 import { SiOpslevel } from "react-icons/si";
@@ -8,11 +8,25 @@ import { useAuth } from "../../features/Authentication/hook/useAuth";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
   const { theme, toggleTheme } = useTheme();
   const { logoutHandler } = useAuth();
 
   const authLoading = useSelector((state) => state.auth.authLoading);
   const user = useSelector((state) => state.auth.user);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const navLinks = [
     { name: "Home", path: "/" },
@@ -50,11 +64,8 @@ const Navbar = () => {
                 <NavLink
                   key={link.name}
                   to={link.path}
-                  className={
-                    ({ isActive }) =>
-                      isActive
-                        ? "text-text -translate-y-1" // Active styles
-                        : "text-text-muted" // Inactive styles
+                  className={({ isActive }) =>
+                    isActive ? "text-primary -translate-y-0.5" : "text-text-muted"
                   }>
                   {link.name}
                 </NavLink>
@@ -71,26 +82,40 @@ const Navbar = () => {
             {authLoading ? (
               <div className="h-10 w-10 rounded-full bg-bg-surface animate-pulse"></div>
             ) : user ? (
-              <div className="relative group cursor-pointer flex items-center h-full py-2">
-                <div className="bg-bg-surface h-10 w-10 flex items-center justify-center rounded-full text-primary font-bold text-xl uppercase border border-border shadow-sm">
+              <div
+                ref={dropdownRef}
+                className="relative group cursor-pointer flex items-center h-full py-2">
+                <div
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="bg-bg-surface h-10 w-10 flex items-center justify-center rounded-full text-primary font-bold text-xl uppercase border border-border shadow-sm hover:bg-bg-muted transition-colors">
                   {user?.name?.charAt(0)}
                 </div>
 
-                {/* Dropdown Menu (Hover Triggered) */}
-                <div className="absolute right-0 top-[100%] w-48 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 transform origin-top-right group-hover:translate-y-0 translate-y-2">
+                {/* Dropdown Menu (Hover and Click Triggered) */}
+                <div
+                  className={`absolute right-0 top-full w-48 pt-2 transition-all duration-200 z-50 transform origin-top-right ${
+                    isDropdownOpen
+                      ? "opacity-100 visible translate-y-0"
+                      : "opacity-0 invisible translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0"
+                  }`}>
                   <div className="bg-bg border border-border rounded-xl shadow-lg overflow-hidden flex flex-col py-2">
                     <Link
                       to="/profile"
+                      onClick={() => setIsDropdownOpen(false)}
                       className="px-4 py-2 text-text hover:bg-bg-surface hover:text-primary transition-colors">
                       Profile
                     </Link>
                     <Link
                       to="/dummy"
+                      onClick={() => setIsDropdownOpen(false)}
                       className="px-4 py-2 text-text hover:bg-bg-surface hover:text-primary transition-colors">
                       Dummy
                     </Link>
                     <button
-                      onClick={logoutHandler}
+                      onClick={() => {
+                        setIsDropdownOpen(false);
+                        logoutHandler();
+                      }}
                       className="text-left px-4 py-2 text-error hover:bg-error/10 transition-colors">
                       Logout
                     </button>

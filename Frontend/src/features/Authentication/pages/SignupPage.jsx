@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, Navigate, useNavigate } from "react-router";
 import Button from "../../../shared/components/Button";
 import Input from "../../../shared/components/Input";
-import { FiUser, FiMail, FiLock, FiShield, FiBriefcase } from "react-icons/fi";
+import { FiUser, FiMail, FiLock, FiBriefcase } from "react-icons/fi";
 import { useAuth } from "../hook/useAuth";
 import { useSelector } from "react-redux";
+import Loader from "../../../shared/components/Loader";
 
 const SignupPage = () => {
   const [submittedData, setSubmittedData] = useState(null);
@@ -31,7 +32,7 @@ const SignupPage = () => {
     },
   });
 
-  if (authLoading) return <div>Loading</div>;
+  // if (authLoading) return <Loader />;
   if (user) return <Navigate to="/" replace />;
 
   const onSubmit = async (data) => {
