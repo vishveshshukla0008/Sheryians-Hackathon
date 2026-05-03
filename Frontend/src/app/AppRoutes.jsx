@@ -10,13 +10,15 @@ import ResetPassword from "../features/Authentication/pages/ResetPassword";
 import UserProfile from "../features/Authentication/pages/UserProfile";
 import HomePage from "../pages/HomePage";
 import About from "../pages/About";
+import ContactUs from "../pages/ContactUs";
 import IncidentAdmin from "../features/Incidents/pages/IncidentAdmin";
 import IncidentDashboard from "../features/Incidents/pages/IncidentDashboard";
 import IncidentDetails from "../features/Incidents/pages/IncidentDetails";
 import IncidentStatusPage from "../features/Incidents/pages/IncidentStatusPage";
 import TeamManagement from "../features/Incidents/pages/TeamManagement";
 
-import DocsLayout from "../pages/Docs/components/DocsLayout";
+import DocsLayout from "../layouts/DocsLayout";
+
 import Docs from "../pages/Docs/getting started/Docs";
 import QuickStart from "../pages/Docs/getting started/QuickStart";
 import FirstIncident from "../pages/Docs/getting started/FirstIncident";
@@ -36,6 +38,7 @@ import SDK from "../pages/Docs/developer/SDK";
 import Authentication from "../pages/Docs/developer/Authentication";
 import ErrorCodes from "../pages/Docs/developer/ErrorCodes";
 import RateLimits from "../pages/Docs/developer/RateLimits";
+import VerifyEmailPage from "../features/Authentication/pages/VerifyEmailPage";
 
 const AppRoutes = () => {
   return (
@@ -44,23 +47,13 @@ const AppRoutes = () => {
         {/* ROOT */}
         <Route path="/" element={<RootLayout />}>
           <Route index element={<HomePage />} />
-          <Route path="login" element={<LoginPage />} />
-          <Route path="register" element={<SignupPage />} />
           <Route path="about" element={<About />} />
-        </Route>
-        <Route path="/admin" element={<IncidentLayout />}>
-          <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard" element={<IncidentDashboard />} />
-          <Route path="incidents" element={<IncidentAdmin />} />
-          <Route path="incidents/:id" element={<IncidentDetails />} />
-          <Route path="status" element={<IncidentStatusPage />} />
-          <Route path="team" element={<TeamManagement />} />
-        </Route>
+          <Route path="contact" element={<ContactUs />} />
+          <Route path="profile" element={<UserProfile />} />
 
-          <Route path="about" element={<About />} />      
-           {/* 🔥 DOCS SYSTEM */}
-           <Route path="docs" element={<DocsLayout />}>
-
+          {/* DOCS */}
+          <Route path="/docs" element={<DocsLayout />}>
+            {" "}
             <Route index element={<Docs />} />
             <Route path="quick-start" element={<QuickStart />} />
             <Route path="first-incident" element={<FirstIncident />} />
@@ -78,9 +71,28 @@ const AppRoutes = () => {
             <Route path="rate-limits" element={<RateLimits />} />
             <Route path="sdk" element={<SDK />} />
           </Route>
+        </Route>
+        {/* Auth Routes with AUTHLAYOUT */}
+        <Route element={<Authlayout />}>
+          <Route path="login" element={<LoginPage />} />
+          <Route path="signup" element={<SignupPage />} />
+          <Route path="forget-password" element={<ForgetPassword />} />
+          <Route path="reset-password" element={<ResetPassword />} />
+          <Route path="verify-email" element={<VerifyEmailPage />} />
+        </Route>
+
+        {/* ADMIN */}
+        <Route path="/admin" element={<IncidentLayout />}>
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<IncidentDashboard />} />
+          <Route path="incidents" element={<IncidentAdmin />} />
+          <Route path="incidents/:id" element={<IncidentDetails />} />
+          <Route path="status" element={<IncidentStatusPage />} />
+          <Route path="team" element={<TeamManagement />} />
+        </Route>
       </Routes>
     </BrowserRouter>
-  )
+  );
 };
 
 export default AppRoutes;

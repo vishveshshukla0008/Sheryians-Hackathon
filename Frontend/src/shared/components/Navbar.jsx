@@ -153,13 +153,13 @@ const Navbar = () => {
                 Sign In
               </NavLink>
             )}
-            <button
+            {/* <button
               onClick={toggleTheme}
               className="p-2 text-text-muted hover:text-text transition-all outline-none flex items-center justify-center bg-bg cursor-pointer rounded-full"
               aria-label="Toggle Theme"
             >
               {theme === "dark" ? <FiSun size={20} className="text-ring" /> : <FiMoon size={20} className="text-text" />}
-            </button>
+            </button> */}
             <Link
               to="/dashboard"
               className="bg-primary text-primary-foreground px-5 py-2 rounded-full font-semibold sm:text-lg hover:bg-primary/90 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5"

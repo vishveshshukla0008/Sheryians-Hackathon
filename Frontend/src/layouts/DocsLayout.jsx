@@ -17,7 +17,7 @@ import {
   FiAlertTriangle,
   FiPackage,
 } from "react-icons/fi";
-import Footer from "../../../shared/components/Footer";
+import Footer from "../shared/components/Footer";
 
 const DocsLayout = () => {
   return (
