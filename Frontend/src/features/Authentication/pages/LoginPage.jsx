@@ -38,6 +38,8 @@ const LoginPage = () => {
   // if (authLoading) return <Loader/>;
   if (user) return <Navigate to="/" replace />;
 
+  console.log(user)
+
   return (
     <div className="min-h-screen flex bg-bg relative overflow-hidden w-full">
       {/* Left side Image with glowing effect - Adjusts flexibly with zoom and screen size */}

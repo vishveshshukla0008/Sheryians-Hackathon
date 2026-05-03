@@ -7,6 +7,7 @@ import LoginPage from "../features/Authentication/pages/LoginPage";
 import SignupPage from "../features/Authentication/pages/SignupPage";
 import ForgetPassword from "../features/Authentication/pages/ForgetPassword";
 import ResetPassword from "../features/Authentication/pages/ResetPassword";
+import UserProfile from "../features/Authentication/pages/UserProfile";
 import HomePage from "../pages/HomePage";
 import About from "../pages/About";
 import IncidentAdmin from "../features/Incidents/pages/IncidentAdmin";
@@ -46,9 +47,11 @@ const AppRoutes = () => {
         <Route path="/" element={<RootLayout />}>
           <Route index element={<HomePage />} />
           <Route path="about" element={<About />} />
+          <Route path="profile" element={<UserProfile />} />
 
           {/* DOCS */}
           <Route path="/docs" element={<DocsLayout />}>
+            {" "}
             <Route index element={<Docs />} />
             <Route path="quick-start" element={<QuickStart />} />
             <Route path="first-incident" element={<FirstIncident />} />
