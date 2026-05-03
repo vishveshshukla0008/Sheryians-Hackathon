@@ -11,14 +11,14 @@ const Button = ({
   ...props
 }) => {
   const baseStyles = 'inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer';
-  
+
   const variants = {
     primary: 'bg-primary text-primary-foreground hover:shadow-[0_0_15px_var(--color-primary)] hover:-translate-y-0.5',
     secondary: 'bg-bg-surface text-text hover:bg-bg-muted border border-border',
     outline: 'border-2 border-primary text-primary hover:bg-primary/10',
     ghost: 'bg-transparent text-text hover:bg-bg-surface',
   };
-  
+
   const sizes = {
     sm: 'py-1.5 px-3 text-sm',
     md: 'py-2 px-4 text-base',

@@ -1,4 +1,4 @@
-import {FiShield, FiBriefcase, FiKey } from "react-icons/fi";
+import { FiShield, FiBriefcase, FiKey } from "react-icons/fi";
 
 const Workspaces = () => {
   return (

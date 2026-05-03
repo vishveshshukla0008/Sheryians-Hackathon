@@ -11,7 +11,7 @@ const Footer = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 lg:gap-8 mb-24">
-          
+
           {/* Logo & Main Info */}
           <div className="lg:col-span-2 flex flex-col pr-8">
             <Link to="/" className="items-center gap-3 text-3xl font-extrabold text-text mb-6 group inline-flex w-fit">
@@ -23,21 +23,21 @@ const Footer = () => {
             <p className="text-text-muted text-lg mb-8 leading-relaxed font-medium">
               The incident response platform for modern engineering teams. Turn production chaos into controlled, autonomous recovery.
             </p>
-            
+
             {/* Social links (styled as pills) */}
             <div className="flex flex-wrap gap-2">
-               {['BlueSky', 'LinkedIn', 'X', 'Facebook', 'Youtube', 'Slack Community'].map((social) => (
-                 <a key={social} href="#" className="px-4 py-2 rounded-full border border-border bg-bg text-sm font-bold text-text-muted hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all hover:-translate-y-1 shadow-sm">
-                   {social}
-                 </a>
-               ))}
+              {['BlueSky', 'LinkedIn', 'X', 'Facebook', 'Youtube', 'Slack Community'].map((social) => (
+                <a key={social} href="#" className="px-4 py-2 rounded-full border border-border bg-bg text-sm font-bold text-text-muted hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all hover:-translate-y-1 shadow-sm">
+                  {social}
+                </a>
+              ))}
             </div>
           </div>
 
           {/* Product Links */}
           <div className="lg:col-span-1">
             <h3 className="font-bold text-text mb-6 uppercase tracking-widest text-md flex items-center gap-2">
-               Product
+              Product
             </h3>
             <ul className="space-y-4">
               {['On-call', 'Incident Response', 'Status Pages', 'AI', 'Changelog'].map((link) => (
@@ -54,7 +54,7 @@ const Footer = () => {
           {/* Learn Links */}
           <div className="lg:col-span-1">
             <h3 className="font-bold text-text mb-6 uppercase tracking-widest text-md flex items-center gap-2">
-               Learn
+              Learn
             </h3>
             <ul className="space-y-4">
               {['Blog', 'Customer Stories', 'Documentation', 'Alternatives', 'Community'].map((link) => (
@@ -85,9 +85,9 @@ const Footer = () => {
             </ul>
           </div>
 
-              <div className="logo h-full w-full flex items-center justify-center text-text-muted">
-                <SiOpslevel className="text-9xl text-primary/90" />
-              </div>
+          <div className="logo h-full w-full flex items-center justify-center text-text-muted">
+            <SiOpslevel className="text-9xl text-primary/90" />
+          </div>
         </div>
 
         {/* Footer Bottom */}
