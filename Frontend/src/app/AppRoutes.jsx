@@ -1,42 +1,64 @@
 import { BrowserRouter, Route, Routes, Navigate } from "react-router";
+
 import RootLayout from "../layouts/RootLayout";
+import Authlayout from "../layouts/Authlayout";
 import IncidentLayout from "../layouts/IncidentLayout";
 import LoginPage from "../features/Authentication/pages/LoginPage";
 import SignupPage from "../features/Authentication/pages/SignupPage";
+import ForgetPassword from "../features/Authentication/pages/ForgetPassword";
+import ResetPassword from "../features/Authentication/pages/ResetPassword";
+import UserProfile from "../features/Authentication/pages/UserProfile";
 import HomePage from "../pages/HomePage";
 import About from "../pages/About";
-import ContactUs from "../pages/ContactUs";
-import DocsLayout from "../pages/Docs/components/DocsLayout";
-import Docs from "../pages/Docs/getting started/Docs";
-import QuickStart from "../pages/Docs/getting started/QuickStart";
-import FirstIncident from "../pages/Docs/getting started/FirstIncident";
-import Incidents from "../pages/Docs/platform/Incidents";
-import APIReference from "../pages/Docs/developer/APIReference";
-import SDK from "../pages/Docs/developer/SDK";
-import Workspaces from "../pages/Docs/platform/WorkSpace";
-import MembersRoles from "../pages/Docs/platform/MembersRoles";
-import TimelineUpdates from "../pages/Docs/platform/TimelineUpdates";
-import StatusPage from "../pages/Docs/platform/StatusPage";
-import AIPostmortem from "../pages/Docs/platform/AIPostmortem";
-import EmailNotifications from "../pages/Docs/integrations/EmailNotification";
-import SlackIntegration from "../pages/Docs/integrations/SlackIntegration";
-import Authentication from "../pages/Docs/developer/Authentication";
-import ErrorCodes from "../pages/Docs/developer/ErrorCodes";
-import RateLimits from "../pages/Docs/developer/RateLimits";import IncidentAdmin from "../features/Incidents/pages/IncidentAdmin";
+import IncidentAdmin from "../features/Incidents/pages/IncidentAdmin";
 import IncidentDashboard from "../features/Incidents/pages/IncidentDashboard";
 import IncidentDetails from "../features/Incidents/pages/IncidentDetails";
 import IncidentStatusPage from "../features/Incidents/pages/IncidentStatusPage";
 import TeamManagement from "../features/Incidents/pages/TeamManagement";
 
+import DocsLayout from "../pages/Docs/components/DocsLayout";
+import Docs from "../pages/Docs/getting started/Docs";
+import QuickStart from "../pages/Docs/getting started/QuickStart";
+import FirstIncident from "../pages/Docs/getting started/FirstIncident";
+
+import Incidents from "../pages/Docs/platform/Incidents";
+import Workspaces from "../pages/Docs/platform/WorkSpace";
+import MembersRoles from "../pages/Docs/platform/MembersRoles";
+import TimelineUpdates from "../pages/Docs/platform/TimelineUpdates";
+import StatusPage from "../pages/Docs/platform/StatusPage";
+import AIPostmortem from "../pages/Docs/platform/AIPostmortem";
+
+import EmailNotifications from "../pages/Docs/integrations/EmailNotification";
+import SlackIntegration from "../pages/Docs/integrations/SlackIntegration";
+
+import APIReference from "../pages/Docs/developer/APIReference";
+import SDK from "../pages/Docs/developer/SDK";
+import Authentication from "../pages/Docs/developer/Authentication";
+import ErrorCodes from "../pages/Docs/developer/ErrorCodes";
+import RateLimits from "../pages/Docs/developer/RateLimits";
+
 const AppRoutes = () => {
   return (
     <BrowserRouter>
       <Routes>
+        {/* ROOT */}
         <Route path="/" element={<RootLayout />}>
           <Route index element={<HomePage />} />
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<SignupPage />} />
+          <Route path="about" element={<About />} />
+        </Route>
+        <Route path="/admin" element={<IncidentLayout />}>
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<IncidentDashboard />} />
+          <Route path="incidents" element={<IncidentAdmin />} />
+          <Route path="incidents/:id" element={<IncidentDetails />} />
+          <Route path="status" element={<IncidentStatusPage />} />
+          <Route path="team" element={<TeamManagement />} />
+        </Route>
+
           <Route path="about" element={<About />} />      
+           {/* 🔥 DOCS SYSTEM */}
            <Route path="docs" element={<DocsLayout />}>
 
             <Route index element={<Docs />} />
@@ -55,22 +77,10 @@ const AppRoutes = () => {
             <Route path="errors" element={<ErrorCodes />} />
             <Route path="rate-limits" element={<RateLimits />} />
             <Route path="sdk" element={<SDK />} />
-
-
           </Route>
-          <Route path="contact" element={<ContactUs />} />
-          </Route>
-        <Route path="/admin" element={<IncidentLayout />}>
-          <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard" element={<IncidentDashboard />} />
-          <Route path="incidents" element={<IncidentAdmin />} />
-          <Route path="incidents/:id" element={<IncidentDetails />} />
-          <Route path="status" element={<IncidentStatusPage />} />
-          <Route path="team" element={<TeamManagement />} />
-        </Route>
       </Routes>
     </BrowserRouter>
-  );
+  )
 };
 
 export default AppRoutes;

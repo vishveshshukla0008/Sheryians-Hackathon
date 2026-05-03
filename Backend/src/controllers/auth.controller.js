@@ -129,11 +129,18 @@ export const login = async (req, res, next) => {
       companyId: user.companyId._id,
     });
 
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+
     return res.status(200).json({
       success: true,
-      message: "Login successful",
+      message: "Login Success !",
       data: {
-        token,
         user: {
           id: user._id,
           name: user.name,
@@ -191,6 +198,7 @@ export const getMe = async (req, res, next) => {
 
 export const logout = async (req, res, next) => {
   try {
+    res.clearCookie("token");
     return res.status(200).json({
       success: true,
       message: "Logged out successfully",

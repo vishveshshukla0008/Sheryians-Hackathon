@@ -107,7 +107,6 @@ const FirstIncident = () => {
           </p>
         </div>
       </section>
-
     </div>
   );
 };

@@ -1,16 +1,23 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router";
+import { Link, Navigate } from "react-router";
 import Button from "../../../shared/components/Button";
 import Input from "../../../shared/components/Input";
 import { FiMail, FiLock, FiShield } from "react-icons/fi";
+import { useAuth } from "../hook/useAuth";
+import { useSelector } from "react-redux";
+import Loader from "../../../shared/components/Loader";
 
 const LoginPage = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { loginHandler } = useAuth();
+
+  const authLoading = useSelector((state) => state.auth.authLoading);
+  const user = useSelector((state) => state.auth.user);
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -20,17 +27,18 @@ const LoginPage = () => {
   });
 
   const onSubmit = async (data) => {
-    setIsSubmitting(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log("Login Submitted Data:", data);
-      alert("Login successful! Check console for data.");
+      await loginHandler(data);
+      reset();
     } catch (error) {
       console.error("Error submitting form", error);
-    } finally {
-      setIsSubmitting(false);
     }
   };
+
+  // if (authLoading) return <Loader/>;
+  if (user) return <Navigate to="/" replace />;
+
+  console.log(user)
 
   return (
     <div className="min-h-screen flex bg-bg relative overflow-hidden w-full">
@@ -127,7 +135,7 @@ const LoginPage = () => {
                 />
                 <div className="flex justify-end mt-2">
                   <Link
-                    to="#"
+                    to="/forget-password"
                     className="text-sm font-semibold text-primary hover:text-primary/80 transition-colors hover:underline">
                     Forgot Password?
                   </Link>
@@ -140,7 +148,7 @@ const LoginPage = () => {
                   type="submit"
                   size="full"
                   variant="primary"
-                  isLoading={isSubmitting}
+                  isLoading={authLoading}
                   className="py-4 text-lg tracking-wide shadow-[0_10px_20px_rgba(255,87,9,0.25)] hover:shadow-[0_15px_25px_rgba(255,87,9,0.35)]">
                   Log in
                 </Button>
@@ -150,7 +158,7 @@ const LoginPage = () => {
                 <p className="text-[15px] font-medium text-text-muted">
                   Don't have an account?{" "}
                   <Link
-                    to="/register"
+                    to="/signup"
                     className="text-primary text-lg hover:text-primary/80 transition-colors hover:underline font-bold ml-1.5 drop-shadow-[0_0_8px_rgba(255,87,9,0.3)]">
                     Create account
                   </Link>

@@ -17,8 +17,7 @@ export const createPostmortem = async (req, res, next) => {
     const timeline = await Timeline.find({
       incidentId: incident._id,
       companyId: req.user.companyId,
-    })
-      .populate("postedBy", "name email")
+    }).populate("postedBy", "name email")
       .sort({ createdAt: 1 });
 
     const prompt = `

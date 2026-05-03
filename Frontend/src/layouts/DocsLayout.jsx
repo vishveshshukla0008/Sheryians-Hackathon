@@ -164,7 +164,6 @@ const DocsLayout = () => {
         </div>
 
       </main>
-
     </div>
   );
 };
