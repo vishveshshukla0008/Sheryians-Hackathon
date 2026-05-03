@@ -1,136 +1,79 @@
-import { FiCpu, FiAlertTriangle, FiCheckCircle } from "react-icons/fi";
+import { FiCpu, FiFileText, FiTrendingUp, FiCrosshair } from "react-icons/fi";
 
 const AIPostmortem = () => {
   return (
-    <div className="space-y-20 animate-fade-in-up">
+    <div className="animate-fade-in-up space-y-12 pb-12">
 
-      {/* 🔥 HEADER */}
       <section>
-        <h1 className="text-4xl font-bold mb-4 flex items-center gap-3">
+        <h1 className="text-4xl sm:text-5xl font-extrabold text-text mb-6 tracking-tight flex items-center gap-4">
           <FiCpu className="text-primary" />
-          AI Postmortem
+          AI Postmortems
         </h1>
-
-        <p className="text-text-muted max-w-2xl">
-          Automatically generate detailed post-incident reports using AI.
-          Analyze root causes, timeline events, and get actionable insights
-          to prevent future outages.
+        <p className="text-xl text-text-muted leading-relaxed max-w-3xl">
+          Nobody likes writing postmortems. MayDayOps leverages Mistral AI to instantly generate comprehensive, blameless Root Cause Analysis (RCA) documents the moment an incident is resolved.
         </p>
       </section>
 
-      {/* 🔥 SUMMARY */}
-      <section className="p-6 border border-border rounded-xl bg-bg-surface">
+      <hr className="border-border/60" />
 
-        <h2 className="text-2xl font-semibold mb-4">
-          Incident Summary
-        </h2>
-
-        <p className="text-text-muted text-sm leading-relaxed">
-          The payment service experienced a critical outage due to a database
-          connection timeout. The issue lasted for approximately 5 minutes
-          and impacted all transaction processing.
+      {/* Why AI? */}
+      <section className="space-y-6">
+        <h2 className="text-3xl font-bold text-text mb-4">Eliminate the Blank Page</h2>
+        <p className="text-text-muted text-lg max-w-3xl leading-relaxed">
+          The goal of an AI Postmortem is not to replace human engineering judgment, but to provide a 90% completed draft. It synthesizes hundreds of timeline logs, chat messages, and system alerts into a cohesive narrative.
         </p>
 
-      </section>
-
-      {/* 🔥 ROOT CAUSE */}
-      <section className="p-6 border border-border rounded-xl bg-bg-surface">
-
-        <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2 text-red-400">
-          <FiAlertTriangle />
-          Root Cause Analysis
-        </h2>
-
-        <p className="text-text-muted text-sm">
-          AI detected that the root cause was a misconfigured database connection pool,
-          leading to timeout failures under high load conditions.
-        </p>
-
-      </section>
-
-      {/* 🔥 TIMELINE ANALYSIS */}
-      <section>
-
-        <h2 className="text-2xl font-bold mb-6">
-          Timeline Breakdown
-        </h2>
-
-        <div className="bg-black p-6 rounded-xl font-mono text-sm border border-border space-y-2">
-
-          <p className="text-red-400">[10:45] Alert triggered</p>
-          <p>[10:46] Incident created</p>
-          <p>[10:47] DB connection errors detected</p>
-          <p>[10:48] Root cause identified by AI</p>
-          <p className="text-green-400">[10:50] Fix deployed</p>
-
+        <div className="grid md:grid-cols-3 gap-6 mt-6">
+          <div className="p-6 rounded-xl border border-border bg-bg-surface">
+            <FiFileText className="text-primary size-6 mb-3" />
+            <h3 className="font-bold text-text mb-2">Executive Summary</h3>
+            <p className="text-sm text-text-muted">Translates dense technical logs into a clear, one-paragraph summary suitable for management.</p>
+          </div>
+          <div className="p-6 rounded-xl border border-border bg-bg-surface">
+            <FiCrosshair className="text-primary size-6 mb-3" />
+            <h3 className="font-bold text-text mb-2">Blameless RCA</h3>
+            <p className="text-sm text-text-muted">Identifies the structural failure (e.g., "lack of rate limiting") rather than the human error.</p>
+          </div>
+          <div className="p-6 rounded-xl border border-border bg-bg-surface">
+            <FiTrendingUp className="text-primary size-6 mb-3" />
+            <h3 className="font-bold text-text mb-2">Action Items</h3>
+            <p className="text-sm text-text-muted">Suggests Jira tickets (e.g., "Implement exponential backoff") to prevent recurrence.</p>
+          </div>
         </div>
-
       </section>
 
-      {/* 🔥 RECOMMENDATIONS */}
-      <section>
-
-        <h2 className="text-2xl font-bold mb-6">
-          AI Recommendations
-        </h2>
-
-        <div className="grid md:grid-cols-3 gap-6">
-
-          {[
-            "Increase database connection pool size",
-            "Implement retry mechanism",
-            "Add monitoring for DB latency"
-          ].map((rec, i) => (
-
-            <div
-              key={i}
-              className="p-5 border border-border rounded-xl bg-bg-surface
-              hover:border-primary transition"
-            >
-
-              <p className="text-sm flex items-start gap-2">
-                <FiCheckCircle className="text-green-400 mt-1" />
-                {rec}
-              </p>
-
-            </div>
-
-          ))}
-
-        </div>
-
-      </section>
-
-      {/* 🔥 AI REPORT BOX */}
-      <section className="p-6 border border-primary/30 rounded-xl bg-primary/5">
-
-        <h3 className="text-primary font-semibold mb-2 flex items-center gap-2">
-          <FiCpu />
-          AI Insight
-        </h3>
-
-        <p className="text-text-muted text-sm">
-          Similar incidents have occurred in the past under high traffic conditions.
-          Consider scaling infrastructure dynamically during peak usage.
+      {/* How it works under the hood */}
+      <section className="space-y-6">
+        <h2 className="text-2xl font-bold text-text">How it Works (Mistral AI)</h2>
+        <p className="text-text-muted max-w-3xl leading-relaxed">
+          When you trigger the `POST /api/incidents/:id/postmortem` endpoint, MayDayOps gathers the entire immutable incident timeline. We format this data and send a highly structured system prompt to the Mistral AI model.
         </p>
 
-      </section>
+        <div className="bg-[#1E1E1E] rounded-xl overflow-hidden border border-border/20 shadow-lg mt-4">
+          <div className="bg-black/40 px-5 py-3 border-b border-border/20">
+            <span className="text-xs font-mono text-text-muted uppercase tracking-wider font-bold">Generated Output Example (Markdown)</span>
+          </div>
+          <div className="p-6 font-mono text-sm overflow-x-auto text-[#D4D4D4] leading-relaxed">
+            <pre>
+              # Postmortem: INC-29402 API Gateway Timeout
 
-      {/* 🔥 API */}
-      <section>
+              ## 1. Summary
+              Between 10:45 UTC and 10:50 UTC, the primary API gateway experienced a 100% error rate, resulting in failed customer checkouts. The issue was resolved by increasing the database connection pool size.
 
-        <h2 className="text-2xl font-bold mb-6">
-          Generate Postmortem (API)
-        </h2>
+              ## 2. Root Cause
+              A marketing push caused a 5x traffic spike. The `payment-service` exhausted its allowed database connections (max: 100), causing upstream gateway requests to time out after 30 seconds.
 
-        <div className="bg-black p-6 rounded-xl font-mono text-sm border border-border">
-{`POST /api/incidents/:id/postmortem
+              ## 3. Timeline
+              - **10:45:** PagerDuty alert fired for 5xx errors.
+              - **10:47:** Developer identified connection pool exhaustion in Datadog.
+              - **10:49:** Hotfix deployed increasing pool limit to 500.
 
-{
-  "includeAI": true
-}`}
+              ## 4. Action Items
+              - [ ] Implement query caching for read-heavy operations.
+              - [ ] Set up alerts for when DB connection pool hits 80% capacity.
+            </pre>
+          </div>
         </div>
-
       </section>
 
     </div>

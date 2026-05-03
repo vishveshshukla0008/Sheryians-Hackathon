@@ -1,5 +1,7 @@
 import express from "express";
 import helmet from "helmet";
+import dotenv from "dotenv";
+dotenv.config();
 import cors from "cors";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";

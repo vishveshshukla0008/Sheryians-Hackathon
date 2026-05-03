@@ -1,122 +1,76 @@
+import { FiLock, FiKey, FiEyeOff } from "react-icons/fi";
+
 const Authentication = () => {
   return (
-    <div className="space-y-20 animate-fade-in-up">
+    <div className="animate-fade-in-up space-y-12 pb-12">
 
-      {/* HEADER */}
       <section>
-        <h1 className="text-4xl font-bold mb-4">Authentication</h1>
-
-        <p className="text-text-muted max-w-3xl leading-relaxed">
-          All requests to the MayDayOps API must be authenticated using a Bearer token.
-          This ensures secure communication and prevents unauthorized access to your
-          incidents and system data.
-        </p>
-
-        <p className="text-text-muted max-w-3xl leading-relaxed mt-4">
-          Authentication is handled using API keys generated from your dashboard.
-          These keys should be kept secure and never exposed in frontend code.
+        <h1 className="text-4xl sm:text-5xl font-extrabold text-text mb-6 tracking-tight flex items-center gap-4">
+          <FiLock className="text-primary" />
+          Authentication
+        </h1>
+        <p className="text-xl text-text-muted leading-relaxed max-w-3xl">
+          The MayDayOps API uses API keys to authenticate requests. You can view and manage your API keys in the MayDayOps Dashboard under <strong>Developer Settings</strong>.
         </p>
       </section>
 
-      {/* HOW IT WORKS */}
-      <section>
-        <h2 className="text-2xl font-bold mb-4">How Authentication Works</h2>
+      <hr className="border-border/60" />
 
-        <div className="space-y-3 text-text-muted leading-relaxed">
-          <p>1. Generate your API key from the MayDayOps dashboard.</p>
-          <p>2. Include the key in every API request using the Authorization header.</p>
-          <p>3. The server validates the token before processing the request.</p>
-          <p>4. If the token is invalid or missing, the request is rejected.</p>
-        </div>
-      </section>
+      {/* Key Types */}
+      <section className="space-y-6">
+        <h2 className="text-3xl font-bold text-text mb-4">Types of API Keys</h2>
 
-      {/* HEADER FORMAT */}
-      <section>
-        <h2 className="text-2xl font-bold mb-4">Authorization Header</h2>
-
-        <p className="text-text-muted mb-4">
-          All requests must include the following header:
-        </p>
-
-        <div className="bg-black p-5 rounded-xl font-mono text-sm border border-border">
-{`Authorization: Bearer YOUR_API_KEY`}
-        </div>
-
-        <p className="text-text-muted text-sm mt-3">
-          Replace <code>YOUR_API_KEY</code> with your actual API token.
-        </p>
-      </section>
-
-      {/* EXAMPLE REQUEST */}
-      <section>
-        <h2 className="text-2xl font-bold mb-4">Example Request</h2>
-
-        <p className="text-text-muted mb-4">
-          Example of creating an incident with authentication:
-        </p>
-
-        <div className="bg-black p-5 rounded-xl font-mono text-sm border border-border">
-{`POST /api/incidents
-
-Headers:
-Authorization: Bearer YOUR_API_KEY
-Content-Type: application/json
-
-Body:
-{
-  "title": "Server Crash",
-  "severity": "critical"
-}`}
-        </div>
-      </section>
-
-      {/* SECURITY NOTES */}
-      <section>
-        <h2 className="text-2xl font-bold mb-4">Security Best Practices</h2>
-
-        <div className="space-y-3 text-text-muted leading-relaxed">
-          <p>• Never expose API keys in frontend applications.</p>
-          <p>• Always store keys securely in environment variables.</p>
-          <p>• Rotate API keys periodically.</p>
-          <p>• Use role-based access for better security control.</p>
-        </div>
-      </section>
-
-      {/* ERROR HANDLING */}
-      <section>
-        <h2 className="text-2xl font-bold mb-4">Authentication Errors</h2>
-
-        <div className="space-y-4">
-
-          <div className="p-4 border border-border rounded-lg">
-            <p className="font-mono text-sm mb-1">401 Unauthorized</p>
-            <p className="text-text-muted text-sm">
-              The request is missing a valid authentication token.
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="p-6 rounded-2xl border border-border bg-bg-surface shadow-sm">
+            <FiKey className="text-primary size-6 mb-3" />
+            <h3 className="text-lg font-bold text-text mb-2">Workspace Keys</h3>
+            <p className="text-sm text-text-muted leading-relaxed mb-4">
+              Scoped to an entire workspace. Best used for automated systems, CI/CD pipelines, and global monitoring tools (like Datadog).
             </p>
+            <code className="px-2 py-1 bg-input rounded text-xs font-mono text-text">mdo_live_wsp_xxxxxxxx</code>
           </div>
 
-          <div className="p-4 border border-border rounded-lg">
-            <p className="font-mono text-sm mb-1">403 Forbidden</p>
-            <p className="text-text-muted text-sm">
-              The token is valid but does not have permission to access this resource.
+          <div className="p-6 rounded-2xl border border-border bg-bg-surface shadow-sm">
+            <FiEyeOff className="text-primary size-6 mb-3" />
+            <h3 className="text-lg font-bold text-text mb-2">Personal Access Tokens (PATs)</h3>
+            <p className="text-sm text-text-muted leading-relaxed mb-4">
+              Scoped to your specific user account. Actions taken with this token will appear in the timeline as performed by *you*. Best for local scripts.
             </p>
+            <code className="px-2 py-1 bg-input rounded text-xs font-mono text-text">mdo_live_pat_xxxxxxxx</code>
           </div>
-
         </div>
       </section>
 
-      {/* TIP */}
-      <section className="p-6 border border-primary/30 bg-primary/5 rounded-xl">
+      {/* Making Requests */}
+      <section className="space-y-6">
+        <h2 className="text-2xl font-bold text-text">Making Authenticated Requests</h2>
+        <p className="text-text-muted">
+          Authentication to the API is performed via HTTP Basic Auth or the Bearer token standard. Provide your API key as the basic auth username value. You do not need to provide a password.
+        </p>
 
-        <h3 className="text-primary font-semibold mb-2">
-          Pro Tip
+        <div className="bg-[#1E1E1E] rounded-xl overflow-hidden border border-border/20 shadow-lg">
+          <div className="bg-black/40 px-5 py-3 border-b border-border/20">
+            <span className="text-xs font-mono text-text-muted uppercase tracking-wider font-bold">Example: Bearer Auth</span>
+          </div>
+          <div className="p-6 font-mono text-sm overflow-x-auto text-[#D4D4D4] leading-relaxed">
+            <pre>
+              <span className="text-[#569CD6]">curl</span> https://api.maydayops.io/v1/auth/verify \
+              -H <span className="text-[#CE9178]">"Authorization: Bearer mdo_live_wsp_8f7d6e5c4b3a2"</span>
+            </pre>
+          </div>
+        </div>
+      </section>
+
+      {/* Security Best Practices */}
+      <section className="p-6 border border-error/30 bg-error/5 rounded-xl">
+        <h3 className="text-error font-bold mb-3 flex items-center gap-2">
+          Security Best Practices
         </h3>
-
-        <p className="text-text-muted text-sm leading-relaxed">
-          If you're integrating with backend services, always handle token validation
-          errors gracefully and retry requests only when necessary.
-        </p>
-
+        <ul className="list-disc list-inside space-y-2 text-sm text-text-muted">
+          <li>Your API keys carry many privileges, so be sure to keep them secure! Do not share your secret API keys in publicly accessible areas such as GitHub, client-side code, and so forth.</li>
+          <li>All API requests must be made over HTTPS. Calls made over plain HTTP will fail.</li>
+          <li>API requests without authentication will also fail with a <code>401 Unauthorized</code> response.</li>
+        </ul>
       </section>
 
     </div>

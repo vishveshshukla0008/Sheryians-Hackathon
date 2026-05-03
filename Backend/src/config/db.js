@@ -5,7 +5,6 @@ const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const connectDB = async () => {
   const maxRetries = 5;
   const retryDelay = 5000;
-
   for (let attempt = 1; attempt <= maxRetries; attempt += 1) {
     try {
       const conn = await mongoose.connect(process.env.MONGO_URI, {

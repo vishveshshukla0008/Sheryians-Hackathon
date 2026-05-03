@@ -1,145 +1,78 @@
+import {FiShield, FiBriefcase, FiKey } from "react-icons/fi";
+
 const Workspaces = () => {
   return (
-    <div className="space-y-20 animate-fade-in-up">
+    <div className="animate-fade-in-up space-y-12 pb-12">
 
-      {/* 🔥 HEADER */}
       <section>
-        <h1 className="text-4xl font-bold mb-4">
+        <h1 className="text-4xl sm:text-5xl font-extrabold text-text mb-6 tracking-tight flex items-center gap-4">
           Workspaces
         </h1>
-
-        <p className="text-text-muted max-w-2xl">
-          Workspaces are the foundation of MayDayOps. They allow teams to organize
-          incidents, services, and members into isolated environments for better
-          collaboration and control.
+        <p className="text-xl text-text-muted leading-relaxed max-w-3xl">
+          Workspaces form the architectural foundation of MayDayOps. They provide strict data isolation, allowing enterprise organizations to manage multiple autonomous teams within a single billing account.
         </p>
       </section>
 
-      {/* 🔥 VISUAL STRUCTURE */}
-      <section className="grid md:grid-cols-3 gap-6">
+      <hr className="border-border/60" />
 
-        {[
-          {
-            title: "Team Isolation",
-            desc: "Separate teams and projects into dedicated environments."
-          },
-          {
-            title: "Service Mapping",
-            desc: "Map services like API, DB, and frontend inside workspace."
-          },
-          {
-            title: "Access Control",
-            desc: "Control who can view, edit, or manage incidents."
-          }
-        ].map((item, i) => (
+      {/* Multi-Tenant Architecture */}
+      <section className="space-y-8">
+        <h2 className="text-3xl font-bold text-text mb-4">Multi-Tenant Isolation</h2>
+        <p className="text-text-muted text-lg max-w-3xl">
+          Under the hood, every Incident, Timeline Event, and Member is strictly scoped to a `workspaceId`. This guarantees that an incident in the "Marketing Site" workspace cannot bleed into the "Core Banking API" workspace.
+        </p>
 
-          <div
-            key={i}
-            className="p-6 rounded-2xl border border-border bg-bg-surface
-            hover:border-primary hover:shadow-[0_0_25px_rgba(255,37,37,0.2)]
-            transition-all duration-300"
-          >
-
-            <h3 className="font-semibold mb-2">
-              {item.title}
-            </h3>
-
-            <p className="text-text-muted text-sm">
-              {item.desc}
+        <div className="grid md:grid-cols-3 gap-6">
+          <div className="p-6 rounded-2xl border border-border bg-bg-surface shadow-sm">
+            <FiBriefcase className="text-primary size-8 mb-4" />
+            <h3 className="font-bold text-text mb-2">Team Autonomy</h3>
+            <p className="text-sm text-text-muted leading-relaxed">
+              Different engineering squads can define their own severity definitions, connect their own Slack channels, and manage their own on-call schedules.
             </p>
-
           </div>
-
-        ))}
-
+          <div className="p-6 rounded-2xl border border-border bg-bg-surface shadow-sm">
+            <FiShield className="text-primary size-8 mb-4" />
+            <h3 className="font-bold text-text mb-2">Data Boundaries</h3>
+            <p className="text-sm text-text-muted leading-relaxed">
+              API keys and integration webhooks are bound to the workspace. A compromised Datadog integration in Workspace A cannot trigger alerts in Workspace B.
+            </p>
+          </div>
+          <div className="p-6 rounded-2xl border border-border bg-bg-surface shadow-sm">
+            <FiKey className="text-primary size-8 mb-4" />
+            <h3 className="font-bold text-text mb-2">Granular Access</h3>
+            <p className="text-sm text-text-muted leading-relaxed">
+              A user can be an `Admin` in the Frontend workspace, but only a `Viewer` in the Database workspace.
+            </p>
+          </div>
+        </div>
       </section>
 
-      {/* 🔥 HOW IT WORKS (DIAGRAM STYLE) */}
-      <section>
-
-        <h2 className="text-2xl font-bold mb-6">
-          Workspace Structure
-        </h2>
-
-        <p className="text-text-muted mb-10 max-w-2xl">
-          Each workspace acts like a container that groups your team, services,
-          and incidents together. This ensures clarity and avoids conflicts across teams.
+      {/* API Reference */}
+      <section className="space-y-6">
+        <h2 className="text-2xl font-bold text-text">Provisioning via API</h2>
+        <p className="text-text-muted">
+          Enterprise customers often automate workspace creation when onboarding new internal engineering teams.
         </p>
 
-        {/* STRUCTURE VISUAL */}
-        <div className="flex flex-wrap gap-6 justify-center">
-
-          {["Workspace", "Services", "Incidents", "Team"].map((item, i) => (
-            <div
-              key={i}
-              className="px-6 py-3 rounded-xl border border-border bg-bg-surface
-              text-sm hover:border-primary transition"
-            >
-              {item}
-            </div>
-          ))}
-
+        <div className="bg-[#1E1E1E] rounded-xl overflow-hidden border border-border/20 shadow-lg">
+          <div className="bg-black/40 px-5 py-3 border-b border-border/20 flex gap-3 items-center">
+            <span className="px-2 py-0.5 rounded text-xs font-mono bg-blue-500/20 text-blue-400 font-bold">POST</span>
+            <span className="text-sm font-mono text-white/80">/api/workspaces</span>
+          </div>
+          <div className="p-6 font-mono text-sm overflow-x-auto">
+            <pre className="text-[#D4D4D4] leading-relaxed">
+              <span className="text-[#9CDCFE]">Body</span>:
+              {'{'}
+              <span className="text-[#9CDCFE]">"name"</span>: <span className="text-[#CE9178]">"Data Engineering Platform"</span>,
+              <span className="text-[#9CDCFE]">"slug"</span>: <span className="text-[#CE9178]">"data-eng"</span>,
+              <span className="text-[#9CDCFE]">"settings"</span>: {'{'}
+              <span className="text-[#9CDCFE]">"requirePostmortem"</span>: <span className="text-[#569CD6]">true</span>,
+              <span className="text-[#9CDCFE]">"defaultSeverity"</span>: <span className="text-[#CE9178]">"SEV-3"</span>
+              {'}'}
+              {'}'}
+            </pre>
+          </div>
         </div>
-
-      </section>
-
-      {/* 🔥 EXAMPLE USE CASE */}
-      <section>
-
-        <h2 className="text-2xl font-bold mb-6">
-          Example Use Case
-        </h2>
-
-        <div className="p-6 border border-border rounded-xl bg-bg-surface space-y-3">
-
-          <p className="text-text-muted text-sm">
-            A company with multiple products can create separate workspaces:
-          </p>
-
-          <ul className="text-sm space-y-2 text-text-muted">
-            <li>• Payments Team Workspace</li>
-            <li>• Authentication Service Workspace</li>
-            <li>• Frontend Monitoring Workspace</li>
-          </ul>
-
-          <p className="text-text-muted text-sm mt-3">
-            Each workspace manages its own incidents without affecting others.
-          </p>
-
-        </div>
-
-      </section>
-
-      {/* 🔥 API SNIPPET */}
-      <section>
-
-        <h2 className="text-2xl font-bold mb-6">
-          Create Workspace (API)
-        </h2>
-
-        <div className="bg-black p-6 rounded-xl font-mono text-sm border border-border">
-{`POST /api/workspaces
-
-{
-  "name": "Payments Team",
-  "description": "Handles all payment-related incidents"
-}`}
-        </div>
-
-      </section>
-
-      {/* 🔥 TIP */}
-      <section className="p-6 rounded-xl border border-primary/30 bg-primary/5">
-
-        <h3 className="text-primary font-semibold mb-2">
-          ⚡ Best Practice
-        </h3>
-
-        <p className="text-text-muted text-sm">
-          Keep workspaces focused and avoid mixing unrelated services. This improves
-          clarity during incidents and speeds up response time.
-        </p>
-
       </section>
 
     </div>

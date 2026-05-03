@@ -5,6 +5,7 @@ import LoginPage from "../features/Authentication/pages/LoginPage";
 import SignupPage from "../features/Authentication/pages/SignupPage";
 import HomePage from "../pages/HomePage";
 import About from "../pages/About";
+import ContactUs from "../pages/ContactUs";
 import DocsLayout from "../pages/Docs/components/DocsLayout";
 import Docs from "../pages/Docs/getting started/Docs";
 import QuickStart from "../pages/Docs/getting started/QuickStart";
@@ -36,7 +37,6 @@ const AppRoutes = () => {
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<SignupPage />} />
           <Route path="about" element={<About />} />      
-           {/* 🔥 DOCS SYSTEM */}
            <Route path="docs" element={<DocsLayout />}>
 
             <Route index element={<Docs />} />
@@ -58,6 +58,7 @@ const AppRoutes = () => {
 
 
           </Route>
+          <Route path="contact" element={<ContactUs />} />
           </Route>
         <Route path="/admin" element={<IncidentLayout />}>
           <Route index element={<Navigate to="dashboard" replace />} />
