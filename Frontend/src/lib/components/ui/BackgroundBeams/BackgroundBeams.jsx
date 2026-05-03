@@ -24,7 +24,7 @@ const baseStrokeD = beamPaths.join(" ");
 /** Faster sweep on dark; light slightly slower so beams stay readable */
 function sweepTiming(index, isDark) {
   const base = isDark ? 3.8 : 4.6;
-  const spread = isDark ? 2.8 : 3.4;
+  const spread = isDark ? 2.9 : 3.4;
   return {
     duration: base + (index % 7) * (spread / 7),
     ease: "easeInOut",
@@ -38,13 +38,15 @@ export function BackgroundBeams({ className }) {
   const isDark = mode === "dark";
   const reduceMotion = useReducedMotion();
 
-  const baseOpacity = isDark ? 0.07 : 0.125;
-  const lineOpacity = isDark ? 0.4 : 0.58;
-  const strokeW = isDark ? 0.5 : 0.62;
+  const baseOpacity = isDark ? 0.15 : 0.125;
+  const lineOpacity = isDark ? 0.7 : 0.58;
+  const strokeW = isDark ? 1.2 : 0.62;
 
-  const accent = isDark
-    ? { a: "#18CCFC", b: "#6344F5", c: "#AE48FF" }
-    : { a: "#0891b2", b: "#4f46e5", c: "#9333ea" };
+  const accent = {
+    a: "var(--color-primary)",
+    b: "var(--color-primary)",
+    c: "var(--color-primary)",
+  };
 
   return (
     <div
@@ -53,8 +55,7 @@ export function BackgroundBeams({ className }) {
         isDark ? "opacity-100" : "opacity-[0.97]",
         className,
       )}
-      aria-hidden
-    >
+      aria-hidden>
       <svg
         className="absolute z-0 h-full w-full min-h-[320px] transform-gpu"
         width="100%"
@@ -62,8 +63,7 @@ export function BackgroundBeams({ className }) {
         viewBox="0 0 696 316"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        preserveAspectRatio="xMidYMid slice"
-      >
+        preserveAspectRatio="xMidYMid slice">
         <path
           d={baseStrokeD}
           stroke="url(#paint0_radial_beams)"
@@ -91,8 +91,7 @@ export function BackgroundBeams({ className }) {
                 x1="42%"
                 x2="58%"
                 y1="0%"
-                y2="100%"
-              >
+                y2="100%">
                 <stop stopColor={accent.a} stopOpacity={0} />
                 <stop offset="22%" stopColor={accent.a} />
                 <stop offset="32.5%" stopColor={accent.b} />
@@ -109,8 +108,7 @@ export function BackgroundBeams({ className }) {
                   y1: ["0%", "100%"],
                   y2: ["0%", `${93 + (index % 9)}%`],
                 }}
-                transition={sweepTiming(index, isDark)}
-              >
+                transition={sweepTiming(index, isDark)}>
                 <stop stopColor={accent.a} stopOpacity={0} />
                 <stop stopColor={accent.a} />
                 <stop offset="32.5%" stopColor={accent.b} />
@@ -125,17 +123,22 @@ export function BackgroundBeams({ className }) {
             cy="0"
             r="1"
             gradientUnits="userSpaceOnUse"
-            gradientTransform="translate(352 34) rotate(90) scale(555 1560.62)"
-          >
+            gradientTransform="translate(352 34) rotate(90) scale(555 1560.62)">
             <stop
               offset="0.0666667"
-              stopColor={isDark ? "var(--beam-radial-mid)" : "var(--beam-radial-mid-light)"}
+              stopColor="var(--color-primary)"
+              stopOpacity={isDark ? 0.35 : 0.16}
             />
             <stop
               offset="0.243243"
-              stopColor={isDark ? "var(--beam-radial-mid)" : "var(--beam-radial-mid-light)"}
+              stopColor="var(--color-primary)"
+              stopOpacity={isDark ? 0.25 : 0.1}
             />
-            <stop offset="0.43594" stopColor="white" stopOpacity={0} />
+            <stop
+              offset="0.43594"
+              stopColor="var(--color-primary)"
+              stopOpacity={0}
+            />
           </radialGradient>
         </defs>
       </svg>

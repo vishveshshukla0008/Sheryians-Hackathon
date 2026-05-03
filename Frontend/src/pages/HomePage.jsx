@@ -27,6 +27,7 @@ import { cn } from "../lib/utils/cn.js";
 
 const HomePage = () => {
   const [focusedProblemCard, setFocusedProblemCard] = useState(null);
+  const newLocal = "Teams investigate issues through a centralized live timeline while AI analyzes logs, identifies patterns, and suggests probable root causes.";
   return (
     <div className="min-h-screen bg-bg">
       {/* Hero Section */}
@@ -291,9 +292,9 @@ const HomePage = () => {
       </section>
 
       {/* Beams + problem narrative + 3D stat cards (React port — not Svelte) */}
-      <section className="relative min-h-[560px] md:min-h-[680px] w-full overflow-hidden border-y border-border/60 bg-gradient-to-b from-neutral-100/95 via-bg to-bg-muted/35 dark:bg-bg dark:bg-none isolate">
+      <section className="relative min-h-[560px] md:min-h-[680px] w-full overflow-hidden  bg-linear-to-b from-neutral-100/95 via-bg to-bg-muted/35 dark:bg-bg dark:bg-none isolate">
         <BackgroundBeams />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-bg/25 to-bg/65 dark:from-bg/70 dark:via-bg/35 dark:to-bg/92 transform-gpu" />
+        <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-transparent via-bg/25 to-bg/65 dark:from-bg/70 dark:via-bg/35 dark:to-bg/92 transform-gpu" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20">
           <div className="text-center mb-12 md:mb-16">
@@ -345,18 +346,18 @@ const HomePage = () => {
                   className={cn(
                     "h-full transition-[transform,filter,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none motion-reduce:transform-none motion-reduce:blur-none motion-reduce:opacity-100",
                     focusedProblemCard === null &&
-                      "scale-100 opacity-100 blur-0 z-[1]",
+                      "scale-100 opacity-100 blur-0 z-1",
                     isFocused &&
-                      "scale-[1.065] sm:scale-[1.08] z-[5] opacity-100 blur-0",
+                      "scale-[1.065] sm:scale-[1.08] z-5 opacity-100 blur-0",
                     isDimmed &&
-                      "scale-[0.9] sm:scale-[0.93] z-[1] opacity-[0.48] blur-[9px] saturate-[0.65]",
+                      "scale-[0.9] sm:scale-[0.93] z-1 opacity-[0.48] blur-[9px] saturate-[0.65]",
                   )}
                   onMouseEnter={() => setFocusedProblemCard(i)}
                 >
                   <CardContainer containerClassName="py-0 h-full">
                     <CardBody className="mx-auto h-full min-h-0 max-w-full md:max-w-none flex">
                       <CardItem translateZ={item.tz} className="h-full flex">
-                        <div className="flex flex-col flex-1 rounded-2xl border border-border bg-bg/95 backdrop-blur-sm p-7 md:p-8 shadow-xl transition-shadow group ring-1 ring-black/[0.03]">
+                        <div className="flex flex-col flex-1 rounded-2xl border border-border bg-bg/95 backdrop-blur-sm p-7 md:p-8 shadow-xl transition-shadow group ring-1 ring-black/3">
                           <CardItem translateZ={52} className="w-fit mb-6">
                             <div className="w-14 h-14 bg-primary/10 text-primary rounded-xl flex items-center justify-center text-2xl ring-1 ring-primary/25 transition-transform duration-200 group-hover:scale-110">
                               {item.icon}
@@ -378,69 +379,6 @@ const HomePage = () => {
           </div>
         </div>
       </section>
-
-      {/* Solutions / Features Section
-      <section className="py-30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-20 text-center">
-            <h2 className="text-3xl md:text-5xl font-bold text-text mb-6">
-              A Smarter Way to Handle Incidents
-            </h2>
-            <p className="text-xl text-text-muted max-w-3xl mx-auto">
-              MayDayOps orchestrates your entire response. From the moment an
-              anomaly is detected, our AI assembles the right people and
-              provides the context they need instantly.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
-            {[
-              {
-                icon: <FiActivity />,
-                title: "Centralized Command",
-                desc: "Forget tab-hopping. Datadog, Slack, GitHub, and alerts—everything lands in one MayDayOps command center.",
-              },
-              {
-                icon: <FiCpu />,
-                title: "AI-Assisted Resolution",
-                desc: "Our proprietary LLMs analyze historical post-mortems to suggest fixes while you focus on code.",
-              },
-              {
-                icon: <FiLayers />,
-                title: "Advanced Management",
-                desc: "Role-based assignments, severity levels, and automated checklists that evolve dynamically.",
-              },
-              {
-                icon: <FiMessageSquare />,
-                title: "Real-Time Collaboration",
-                desc: "Slack-sync technology that keeps your chat and incident dashboard perfectly in step.",
-              },
-              {
-                icon: <FiGitCommit />,
-                title: "Live Timeline",
-                desc: "Automatic event logging for every action taken, making post-mortems a breeze.",
-              },
-              {
-                icon: <FiZap />,
-                title: "AI Insights",
-                desc: "Detect patterns across years of incidents to predict failures before they impact your users.",
-              },
-            ].map((feature, i) => (
-              <div key={i} className="flex gap-4">
-                <div className="shrink-0 w-12 h-12 bg-primary/10 text-primary rounded-lg flex items-center justify-center text-xl mt-1">
-                  {feature.icon}
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-text mb-2">
-                    {feature.title}
-                  </h3>
-                  <p className="text-text-muted">{feature.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section> */}
 
       {/* Path to Resolution (Timeline) */}
       <section className="py-24 bg-bg relative overflow-hidden">
@@ -473,7 +411,7 @@ const HomePage = () => {
                 {
                   step: "3",
                   title: "Collaborative Investigation",
-                  desc: "Teams investigate issues through a centralized live timeline while AI analyzes logs, identifies patterns, and suggests probable root causes.",
+                  desc: newLocal,
                 },
                 {
                   step: "4",

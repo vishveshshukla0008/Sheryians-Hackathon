@@ -56,7 +56,7 @@ const Navbar = () => {
             <div className="flex space-x-6 sm:text-lg">
               <button
                 onClick={toggleTheme}
-                className="p-2 text-text transition-all outline-none flex items-center justify-center bg-bg cursor-pointer"
+                className="p-2 text-text transition-all outline-none flex items-center justify-center  cursor-pointer"
                 aria-label="Toggle Theme">
                 {theme === "dark" ? <FiSun size={20} /> : <FiMoon size={20} />}
               </button>
@@ -123,11 +123,13 @@ const Navbar = () => {
                 </div>
               </div>
             ) : (
-              <Link
-                to="/login"
-                className="text-text hover:text-primary font-medium transition-colors">
+               <NavLink
+                  to={"/login"}
+                  className={({ isActive }) =>
+                    isActive ? "text-primary" : "text-text-muted text-lg"
+                  }>
                 Sign In
-              </Link>
+              </NavLink>
             )}
           </div>
 

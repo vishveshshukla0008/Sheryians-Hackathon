@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { SiOpslevel } from "react-icons/si";
 
 /** Brand primary (window + feature nav) */
 const PRIMARY = "#ff5709";
@@ -59,7 +60,7 @@ function ShowcaseBackdrop() {
         }}
         aria-hidden
       />
-      <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-transparent to-black/55" aria-hidden />
+      <div className="pointer-events-none absolute inset-0 rounded-3xl bg-linear-to-r from-transparent via-transparent to-black/55" aria-hidden />
     </>
   );
 }
@@ -77,7 +78,7 @@ function MiniSidebarRail() {
       <div className="h-1.5 w-6 rounded-full bg-white/35" />
       <div className="h-1.5 w-7 rounded-full bg-white/22" />
       <div
-        className="mt-1 h-9 w-full max-w-[2rem] rounded-lg shadow-[0_0_22px_rgba(255,87,9,0.45)] ring-1 ring-white/60"
+        className="mt-1 h-9 w-full max-w-8 rounded-lg shadow-[0_0_22px_rgba(255,87,9,0.45)] ring-1 ring-white/60"
         style={{ backgroundColor: PRIMARY }}
       />
       <div className="h-1.5 w-7 rounded-full bg-white/15" />
@@ -92,7 +93,7 @@ function MiniSidebarRail() {
 
 function WindowChromeGlass() {
   return (
-    <div className="flex items-center gap-3 px-3 py-2.5 border-b border-white/15 bg-black/[0.12] backdrop-blur-md">
+    <div className="flex items-center gap-3 px-3 py-2.5 border-b border-white/15 bg-black/12 backdrop-blur-md">
       <div className="flex gap-1.5 shrink-0">
         <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#ff5f57]" />
         <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#febc2e]" />
@@ -110,12 +111,10 @@ function MayDayOpsAppHeader({ time = "2:45 PM" }) {
     <div className="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-100 pb-3 mb-4">
       <div className="flex items-center gap-2 min-w-0">
         <div
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg shadow-sm border border-black/[0.06]"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg shadow-sm border border-black/6"
           style={{ backgroundColor: PRIMARY, color: PRIMARY_TEXT_ON_ORANGE }}
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-            <path d="M12 3L4 10v11h16V10l-8-7zm0 3.83L17 11v9H7v-8l5-4.17z" />
-          </svg>
+           <SiOpslevel/>
         </div>
         <div className="min-w-0">
           <span className="font-bold text-neutral-900 text-sm sm:text-base tracking-tight">
@@ -551,7 +550,7 @@ function PanelTimeline() {
                   className="relative flex gap-3 pl-1"
                 >
                   <div
-                    className={`relative z-[1] flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-neutral-900 text-xs font-bold text-white ring-2 ring-offset-2 ring-offset-white ${row.ring}`}
+                    className={`relative z-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-neutral-900 text-xs font-bold text-white ring-2 ring-offset-2 ring-offset-white ${row.ring}`}
                   >
                     {row.letter}
                   </div>
@@ -626,7 +625,7 @@ export default function FeatureShowcaseSection() {
 
   return (
     <section
-      className="w-full bg-bg border-y border-border/80"
+      className="w-full bg-bg  border-border/80"
       aria-labelledby="feature-showcase-heading"
     >
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-16 lg:py-24">
@@ -715,7 +714,7 @@ export default function FeatureShowcaseSection() {
           <div className="lg:col-span-3">
             <div className={`${showcaseBgClass} lg:sticky lg:top-24 lg:z-10`}>
               <ShowcaseBackdrop />
-              <div className="relative z-[1]">
+              <div className="relative z-1">
                 <GlassBrowserWindow active={active} />
               </div>
             </div>
