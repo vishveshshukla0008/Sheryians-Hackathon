@@ -244,7 +244,7 @@ const UserProfile = () => {
                           {item.label}
                         </p>
 
-                        <p className="text-text font-semibold mt-2 break-words">
+                        <p className="text-text font-semibold mt-2 wrap-break-word">
                           {item.value}
                         </p>
                       </div>
