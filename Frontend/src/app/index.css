@@ -10,6 +10,11 @@
 }
 
 :root {
+  /* Used by BackgroundBeams SVG (light + dark) */
+  --neutral-300: #d4d4d4;
+  --beam-radial-mid-light: #64748b;
+  --beam-radial-mid: #a3a3a3;
+
   --color-primary: #ff5709;
   --color-primary-foreground: #ffffff;
 
@@ -29,6 +34,8 @@
 }
 
 [data-theme="dark"] {
+  --beam-radial-mid: #9ca3af;
+
   --color-primary: #ff5709;
   --color-primary-foreground: #ffffff;
   --color-bg: #1c1d1e;
