@@ -1,8 +1,12 @@
 import { BrowserRouter, Route, Routes, Navigate } from "react-router";
+
 import RootLayout from "../layouts/RootLayout";
+import Authlayout from "../layouts/Authlayout";
 import IncidentLayout from "../layouts/IncidentLayout";
 import LoginPage from "../features/Authentication/pages/LoginPage";
 import SignupPage from "../features/Authentication/pages/SignupPage";
+import ForgetPassword from "../features/Authentication/pages/ForgetPassword";
+import ResetPassword from "../features/Authentication/pages/ResetPassword";
 import HomePage from "../pages/HomePage";
 import About from "../pages/About";
 import IncidentAdmin from "../features/Incidents/pages/IncidentAdmin";
@@ -11,16 +15,68 @@ import IncidentDetails from "../features/Incidents/pages/IncidentDetails";
 import IncidentStatusPage from "../features/Incidents/pages/IncidentStatusPage";
 import TeamManagement from "../features/Incidents/pages/TeamManagement";
 
+import DocsLayout from "../layouts/DocsLayout";
+
+import Docs from "../pages/Docs/getting started/Docs";
+import QuickStart from "../pages/Docs/getting started/QuickStart";
+import FirstIncident from "../pages/Docs/getting started/FirstIncident";
+
+import Incidents from "../pages/Docs/platform/Incidents";
+import Workspaces from "../pages/Docs/platform/WorkSpace";
+import MembersRoles from "../pages/Docs/platform/MembersRoles";
+import TimelineUpdates from "../pages/Docs/platform/TimelineUpdates";
+import StatusPage from "../pages/Docs/platform/StatusPage";
+import AIPostmortem from "../pages/Docs/platform/AIPostmortem";
+
+import EmailNotifications from "../pages/Docs/integrations/EmailNotification";
+import SlackIntegration from "../pages/Docs/integrations/SlackIntegration";
+
+import APIReference from "../pages/Docs/developer/APIReference";
+import SDK from "../pages/Docs/developer/SDK";
+import Authentication from "../pages/Docs/developer/Authentication";
+import ErrorCodes from "../pages/Docs/developer/ErrorCodes";
+import RateLimits from "../pages/Docs/developer/RateLimits";
+import VerifyEmailPage from "../features/Authentication/pages/VerifyEmailPage";
+
 const AppRoutes = () => {
   return (
     <BrowserRouter>
       <Routes>
+        {/* ROOT */}
         <Route path="/" element={<RootLayout />}>
           <Route index element={<HomePage />} />
-          <Route path="login" element={<LoginPage />} />
-          <Route path="register" element={<SignupPage />} />
           <Route path="about" element={<About />} />
+
+          {/* DOCS */}
+          <Route path="/docs" element={<DocsLayout />}>
+            <Route index element={<Docs />} />
+            <Route path="quick-start" element={<QuickStart />} />
+            <Route path="first-incident" element={<FirstIncident />} />
+            <Route path="incidents" element={<Incidents />} />
+            <Route path="workspaces" element={<Workspaces />} />
+            <Route path="members" element={<MembersRoles />} />
+            <Route path="timeline" element={<TimelineUpdates />} />
+            <Route path="status" element={<StatusPage />} />
+            <Route path="postmortem" element={<AIPostmortem />} />
+            <Route path="email" element={<EmailNotifications />} />
+            <Route path="slack" element={<SlackIntegration />} />
+            <Route path="api" element={<APIReference />} />
+            <Route path="auth" element={<Authentication />} />
+            <Route path="errors" element={<ErrorCodes />} />
+            <Route path="rate-limits" element={<RateLimits />} />
+            <Route path="sdk" element={<SDK />} />
+          </Route>
         </Route>
+        {/* Auth Routes with AUTHLAYOUT */}
+        <Route element={<Authlayout />}>
+          <Route path="login" element={<LoginPage />} />
+          <Route path="signup" element={<SignupPage />} />
+          <Route path="forget-password" element={<ForgetPassword />} />
+          <Route path="reset-password" element={<ResetPassword />} />
+          <Route path="verify-email" element={<VerifyEmailPage />} />
+        </Route>
+
+        {/* ADMIN */}
         <Route path="/admin" element={<IncidentLayout />}>
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<IncidentDashboard />} />

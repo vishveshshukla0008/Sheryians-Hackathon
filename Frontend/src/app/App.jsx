@@ -1,8 +1,15 @@
+import { useEffect } from "react";
+import { useAuth } from "../features/Authentication/hook/useAuth";
 import AppRoutes from "./AppRoutes";
 import { Lenis } from "lenis/react";
 import "lenis/dist/lenis.css";
 
 function App() {
+  const { getCurrentUser } = useAuth();
+
+  useEffect(() => {
+    getCurrentUser();
+  }, []);
   return (
     <Lenis
       root
