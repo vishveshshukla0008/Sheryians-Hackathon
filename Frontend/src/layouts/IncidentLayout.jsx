@@ -36,9 +36,9 @@ const IncidentLayout = () => {
       />
       <div className="flex h-screen bg-bg text-text overflow-hidden">
         {/* Sidebar */}
-        <aside className="w-[260px] bg-bg border-r border-border flex flex-col shrink-0">
+        <aside className="w-65 bg-bg border-r border-border flex flex-col shrink-0">
           {/* Logo Area in topBar */}
-          <div className="h-[80px] flex items-center px-6 border-b border-border shrink-0">
+          <div className="h-20 flex items-center px-6 border-b border-border shrink-0">
             <div className="flex items-center justify-center mr-3">
               <SiOpslevel size={30} />
             </div>
@@ -159,7 +159,7 @@ const IncidentLayout = () => {
           {/* Navbar */}
           {location.pathname !== "/admin/status" &&
             location.pathname !== "/admin/team" && (
-              <header className="h-[80px] border-b border-border flex items-center justify-between px-8 shrink-0">
+              <header className="h-20 border-b border-border flex items-center justify-between px-8 shrink-0">
                 <div className="flex items-center gap-8">
                   <nav className="hidden md:flex items-center gap-6 pt-0.5">
                     <Link
@@ -189,7 +189,7 @@ const IncidentLayout = () => {
                     <input
                       type="text"
                       placeholder="SEARCH SYSTEM..."
-                      className="bg-input border border-border rounded-full py-2 pl-9 pr-4 text-[11px] text-text placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors w-[220px]"
+                      className="bg-input border border-border rounded-full py-2 pl-9 pr-4 text-[11px] text-text placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors w-55"
                     />
                   </div>
                   <button className="bg-primary hover:bg-primary/80 text-primary-foreground px-4 py-2 rounded-full text-[10px] font-bold  transition-colors uppercase ml-2">
