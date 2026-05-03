@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router";
 import {
   FiTrendingDown,
@@ -11,10 +11,22 @@ import {
   FiGitCommit,
   FiZap,
   FiArrowRight,
+  FiShield,
+  FiTarget,
 } from "react-icons/fi";
 import { SiOpslevel } from "react-icons/si";
+import TestimonialSwipeStack from "../shared/components/TestimonialSwipeStack";
+import FeatureShowcaseSection from "../shared/components/FeatureShowcaseSection";
+import { BackgroundBeams } from "../lib/components/ui/BackgroundBeams";
+import {
+  CardBody,
+  CardContainer,
+  CardItem,
+} from "../lib/components/ui/ThreeDCardEffect";
+import { cn } from "../lib/utils/cn.js";
 
 const HomePage = () => {
+  const [focusedProblemCard, setFocusedProblemCard] = useState(null);
   return (
     <div className="min-h-screen bg-bg">
       {/* Hero Section */}
@@ -228,57 +240,146 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Problem Section */}
-      <section className="py-17 bg-bg ">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+      <FeatureShowcaseSection />
+
+      {/* Proven + Swipe Cards Section */}
+      <section className="py-24 bg-bg relative overflow-hidden isolate">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70%] h-[70%] max-w-5xl bg-primary/10 blur-[100px] rounded-full pointer-events-none transform-gpu" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="relative">
+            <TestimonialSwipeStack
+              heightClassName="h-[360px] sm:h-[420px] md:h-[460px] lg:h-[520px]"
+              items={[
+                {
+                  id: "t1",
+                  bgImage:
+                    "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=2000&q=60",
+                  quote:
+                    "We chose MayDayOps because we had to do less work to make it fit our existing systems. Mean-time-to-action dropped from multiple minutes to seconds.",
+                  brandAlt: "CLOUDFLARE",
+                  personTitle: "Senior Engineering Manager",
+                  metricBig: "minutes to seconds",
+                  metricSmall: "change in mean-time-to-action",
+                },
+                {
+                  id: "t2",
+                  bgImage:
+                    "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?auto=format&fit=crop&w=2000&q=60",
+                  quote:
+                    "During SEV-1s, the timeline + ownership keeps everyone aligned. No more hunting across tabs—every update has the context attached.",
+                  brandAlt: "FINTECH",
+                  personTitle: "SRE Lead",
+                  metricBig: "1 timeline",
+                  metricSmall: "alerts, chat, traces unified",
+                },
+                {
+                  id: "t3",
+                  bgImage:
+                    "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=2000&q=60",
+                  quote:
+                    "AI hints and runbooks cut our triage loop dramatically. We spend less time guessing and more time shipping the fix.",
+                  brandAlt: "E-COMMERCE",
+                  personTitle: "Platform Engineer",
+                  metricBig: "faster RCA",
+                  metricSmall: "less guesswork under pressure",
+                },
+              ]}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Beams + problem narrative + 3D stat cards (React port — not Svelte) */}
+      <section className="relative min-h-[560px] md:min-h-[680px] w-full overflow-hidden border-y border-border/60 bg-gradient-to-b from-neutral-100/95 via-bg to-bg-muted/35 dark:bg-bg dark:bg-none isolate">
+        <BackgroundBeams />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-bg/25 to-bg/65 dark:from-bg/70 dark:via-bg/35 dark:to-bg/92 transform-gpu" />
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20">
+          <div className="text-center mb-12 md:mb-16">
             <h2 className="text-3xl md:text-5xl font-bold text-text mb-4">
               When Systems Fail,{" "}
               <span className="font-extrabold text-primary">
                 Everything Slows Down
               </span>
             </h2>
-            <p className="text-xl text-text-muted max-w-2xl mx-auto">
-              Every minute of downtime isn't just lost revenue—it's lost trust
-              and team burnout. Standard tools create more noise than clarity.
+            <p className="text-lg md:text-xl text-text-muted max-w-2xl mx-auto leading-relaxed">
+              Every minute of downtime isn&apos;t just lost revenue—it&apos;s lost
+              trust and team burnout. Standard tools create more noise than
+              clarity.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div
+            className="grid md:grid-cols-3 gap-8 lg:gap-10 items-stretch"
+            onMouseLeave={() => setFocusedProblemCard(null)}
+          >
             {[
               {
                 icon: <FiTrendingDown />,
                 title: "Loss of Revenue",
                 desc: "Enterprise outages cost an average of $9,000 per minute.",
+                tz: 96,
               },
               {
                 icon: <FiUsers />,
                 title: "Context Switching",
                 desc: "Teams waste 40% of their time just finding the right Slack thread.",
+                tz: 115,
               },
               {
                 icon: <FiClock />,
                 title: "Slow Root Cause",
                 desc: "Without AI, identifying the breach point takes 3x longer.",
+                tz: 104,
               },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="bg-bg p-8 rounded-2xl border border-border hover:border-primary hover:shadow-lg transition-all  group">
-                <div className="w-14 h-14 bg-primary/10 text-primary rounded-xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
-                  {item.icon}
+            ].map((item, i) => {
+              const isFocused =
+                focusedProblemCard !== null && focusedProblemCard === i;
+              const isDimmed =
+                focusedProblemCard !== null && focusedProblemCard !== i;
+
+              return (
+                <div
+                  key={i}
+                  className={cn(
+                    "h-full transition-[transform,filter,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none motion-reduce:transform-none motion-reduce:blur-none motion-reduce:opacity-100",
+                    focusedProblemCard === null &&
+                      "scale-100 opacity-100 blur-0 z-[1]",
+                    isFocused &&
+                      "scale-[1.065] sm:scale-[1.08] z-[5] opacity-100 blur-0",
+                    isDimmed &&
+                      "scale-[0.9] sm:scale-[0.93] z-[1] opacity-[0.48] blur-[9px] saturate-[0.65]",
+                  )}
+                  onMouseEnter={() => setFocusedProblemCard(i)}
+                >
+                  <CardContainer containerClassName="py-0 h-full">
+                    <CardBody className="mx-auto h-full min-h-0 max-w-full md:max-w-none flex">
+                      <CardItem translateZ={item.tz} className="h-full flex">
+                        <div className="flex flex-col flex-1 rounded-2xl border border-border bg-bg/95 backdrop-blur-sm p-7 md:p-8 shadow-xl transition-shadow group ring-1 ring-black/[0.03]">
+                          <CardItem translateZ={52} className="w-fit mb-6">
+                            <div className="w-14 h-14 bg-primary/10 text-primary rounded-xl flex items-center justify-center text-2xl ring-1 ring-primary/25 transition-transform duration-200 group-hover:scale-110">
+                              {item.icon}
+                            </div>
+                          </CardItem>
+                          <h3 className="text-xl font-bold text-text mb-3">
+                            {item.title}
+                          </h3>
+                          <p className="text-text-muted leading-relaxed text-[15px]">
+                            {item.desc}
+                          </p>
+                        </div>
+                      </CardItem>
+                    </CardBody>
+                  </CardContainer>
                 </div>
-                <h3 className="text-xl font-bold text-text mb-3">
-                  {item.title}
-                </h3>
-                <p className="text-text-muted leading-relaxed">{item.desc}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* Solutions / Features Section */}
+      {/* Solutions / Features Section
       <section className="py-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-20 text-center">
@@ -297,7 +398,7 @@ const HomePage = () => {
               {
                 icon: <FiActivity />,
                 title: "Centralized Command",
-                desc: "Forget tab-hopping. We pull data from Datadog, PagerDuty, Slack, and GitHub into one unified center.",
+                desc: "Forget tab-hopping. Datadog, Slack, GitHub, and alerts—everything lands in one MayDayOps command center.",
               },
               {
                 icon: <FiCpu />,
@@ -339,7 +440,7 @@ const HomePage = () => {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Path to Resolution (Timeline) */}
       <section className="py-24 bg-bg relative overflow-hidden">
