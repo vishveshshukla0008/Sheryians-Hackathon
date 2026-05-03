@@ -9,7 +9,11 @@ import {
   FiClock,
   FiMail,
   FiUser,
+  FiTag,
+  FiUsers,
+  FiAward,
 } from "react-icons/fi";
+import { HiBuildingOffice2 } from "react-icons/hi2";
 import Button from "../../../shared/components/Button";
 import Input from "../../../shared/components/Input";
 import toast from "react-hot-toast";
@@ -70,8 +74,6 @@ const UserProfile = () => {
     toast.success("Profile updated successfully");
     setEditMode(false);
   };
-
-  console.log(user);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-bg p-6 sm:p-10 overflow-hidden">
@@ -187,6 +189,70 @@ const UserProfile = () => {
                 </div>
               )}
             </form>
+
+            <div className="mt-8 rounded-xl border border-border/40 bg-bg p-6">
+              <div className="flex items-center justify-between gap-4 mb-6">
+                <div>
+                  <p className="text-lg font-bold uppercase  text-primary">
+                    Company details
+                  </p>
+                  <h2 className="text-2xl font-bold text-text mt-2">
+                    Organization summary
+                  </h2>
+                </div>
+                <div className="bg-primary/10 text-primary rounded-2xl px-4 py-2 text-sm font-bold">
+                  {user.company?.plan || "FREE"}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[
+                  {
+                    label: "Company ID",
+                    value: user.company?.id || "—",
+                    icon: HiBuildingOffice2,
+                  },
+                  {
+                    label: "Slug",
+                    value: user.company?.slug || "—",
+                    icon: FiTag,
+                  },
+                  {
+                    label: "Members",
+                    value: user.company?.memberCount ?? "—",
+                    icon: FiUsers,
+                  },
+                  {
+                    label: "Plan",
+                    value: user.company?.plan || "—",
+                    icon: FiAward,
+                  },
+                ].map((item, index) => (
+                  <div
+                    key={item.label}
+                    className={`
+        rounded-xl border border-border/60 bg-bg p-4 text-md
+        ${index === 0 ? "md:col-span-2" : ""}
+      `}>
+                    <div className="flex items-center gap-3">
+                      <div className="min-w-[34px] min-h-[34px] flex items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                        <item.icon size={18} />
+                      </div>
+
+                      <div>
+                        <p className="text-text-muted uppercase tracking-wide font-semibold">
+                          {item.label}
+                        </p>
+
+                        <p className="text-text font-semibold mt-2 break-words">
+                          {item.value}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -200,9 +266,6 @@ const UserProfile = () => {
                 Account snapshot
               </h2>
             </div>
-            <div className="bg-primary/10 text-primary rounded-xl px-4 py-3 text-md font-bold">
-              {user.company?.plan || "FREE"}
-            </div>
           </div>
 
           <div className="space-y-4">
@@ -210,7 +273,7 @@ const UserProfile = () => {
               {
                 label: "Workspace",
                 value: user.company?.name || "—",
-                icon: FiBriefcase,
+                icon: HiBuildingOffice2,
               },
               {
                 label: "Role",
@@ -223,7 +286,7 @@ const UserProfile = () => {
                 icon: FiMail,
               },
               {
-                label: "Last login",
+                label: "Last Active",
                 value: lastLogin,
                 icon: FiClock,
               },
@@ -244,43 +307,6 @@ const UserProfile = () => {
                 </div>
               </div>
             ))}
-          </div>
-
-          <div className="mt-8">
-            <p className="text-xl font-bold text-text-muted tracking-wider mb-3">
-              Company details
-            </p>
-            <div className="grid gap-4">
-              {[
-                {
-                  label: "Company ID",
-                  value: user.company?.id || "—",
-                },
-                {
-                  label: "Slug",
-                  value: user.company?.slug || "—",
-                },
-                {
-                  label: "Members",
-                  value: user.company?.memberCount ?? "—",
-                },
-                {
-                  label: "Plan",
-                  value: user.company?.plan || "—",
-                },
-              ].map((item) => (
-                <div
-                  key={item.label}
-                  className="rounded-xl border border-border/60 bg-bg p-4 text-md">
-                  <p className="text-text-muted uppercase tracking-wide font-semibold">
-                    {item.label}
-                  </p>
-                  <p className="text-text font-semibold mt-2 break-words">
-                    {item.value}
-                  </p>
-                </div>
-              ))}
-            </div>
           </div>
 
           <div className="mt-8 border-t border-border/60 pt-6">
