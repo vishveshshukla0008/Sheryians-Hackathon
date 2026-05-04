@@ -1,12 +1,14 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router";
 import { GoStopwatch } from "react-icons/go";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
+import { io } from "socket.io-client";
 import Button from "../../../shared/components/Button";
 import { api } from "../../../api/httpClient";
 import { useWorkspacePaths } from "../hooks/useWorkspacePaths";
 import { canManageWorkspace } from "../../../lib/workspacePaths";
+import { getSocketBaseUrl } from "../../../lib/socketBaseUrl";
 
 const formatStatusLabel = (status = "") => {
   if (status === "OPEN") return "Open";
@@ -33,6 +35,15 @@ const toElapsedTime = (incident, nowTs) => {
   const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
   const seconds = String(totalSeconds % 60).padStart(2, "0");
   return `${hours}:${minutes}:${seconds}`;
+};
+
+const sortTimelineAsc = (entries) =>
+  [...entries].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
+const mergeTimelineEntry = (prev, evt) => {
+  if (!evt?._id) return prev;
+  if (prev.some((e) => String(e._id) === String(evt._id))) return prev;
+  return sortTimelineAsc([...prev, evt]);
 };
 
 const normalizeActionItems = (actionItems) => {
@@ -109,6 +120,43 @@ const IncidentDetails = () => {
     }
   }, [id]);
 
+  const canPostTimeline = useMemo(() => {
+    if (!user || !incident) return false;
+    if (canManageWorkspace(user.role)) return true;
+    const uid = String(user._id ?? user.id ?? "");
+    const assignedIds = (incident.assignedUsers || []).map((entry) =>
+      typeof entry === "object" && entry?._id != null ? String(entry._id) : String(entry)
+    );
+    return Boolean(uid && assignedIds.includes(uid));
+  }, [user, incident]);
+
+  const appendTimelineFromSocket = useCallback((evt) => {
+    const incidentMatch =
+      evt?.incidentId != null &&
+      id != null &&
+      String(evt.incidentId) === String(id);
+    if (!incidentMatch) return;
+    setTimeline((prev) => mergeTimelineEntry(prev, evt));
+  }, [id]);
+
+  useEffect(() => {
+    if (!id) return;
+
+    const socket = io(getSocketBaseUrl(), {
+      withCredentials: true,
+      transports: ["websocket", "polling"],
+    });
+
+    socket.emit("join:incident", id);
+    socket.on("timeline:new", appendTimelineFromSocket);
+
+    return () => {
+      socket.emit("leave:incident", id);
+      socket.off("timeline:new", appendTimelineFromSocket);
+      socket.disconnect();
+    };
+  }, [id, appendTimelineFromSocket]);
+
   const responderList = useMemo(() => {
     if (!incident) return [];
     const map = new Map();
@@ -137,13 +185,18 @@ const IncidentDetails = () => {
 
   const handlePostTimeline = async () => {
     const trimmed = timelineMessage.trim();
-    if (!trimmed) return;
+    if (!trimmed || !canPostTimeline) return;
 
     try {
       setIsPostingTimeline(true);
-      await api.post(`/timeline/${id}`, { message: trimmed });
+      const res = await api.post(`/timeline/${id}`, { message: trimmed });
       setTimelineMessage("");
-      await fetchIncidentDetails();
+      const evt = res?.data?.timeline;
+      if (evt) {
+        setTimeline((prev) => mergeTimelineEntry(prev, evt));
+      } else {
+        await fetchIncidentDetails();
+      }
       toast.success("Timeline updated");
     } catch (error) {
       toast.error(error?.message || "Failed to post timeline update");
@@ -318,17 +371,28 @@ const IncidentDetails = () => {
 
           {/* New Post Input */}
           <div className="relative">
+            {!canPostTimeline && (
+              <p className="text-sm text-text-muted mb-2">
+                Only admins or responders assigned to this incident can post timeline updates.
+              </p>
+            )}
             <input
               value={timelineMessage}
               onChange={(e) => setTimelineMessage(e.target.value)}
               type="text"
-              placeholder="Post an update to the timeline..."
-              className="w-full bg-input border border-border rounded-lg px-4 py-4 pr-24 text-lg font-medium text-text placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors shadow-lg"
+              disabled={!canPostTimeline}
+              placeholder={
+                canPostTimeline
+                  ? "Post an update to the timeline..."
+                  : "Assign yourself as a responder to post updates..."
+              }
+              className="w-full bg-input border border-border rounded-lg px-4 py-4 pr-24 text-lg font-medium text-text placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             />
             <Button
               size="sm"
               isLoading={isPostingTimeline}
               onClick={handlePostTimeline}
+              disabled={!canPostTimeline}
               className="absolute right-2 top-2 bottom-2 px-6 rounded-md text-md"
             >
               Post

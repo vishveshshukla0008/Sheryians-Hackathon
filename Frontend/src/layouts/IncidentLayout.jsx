@@ -23,6 +23,12 @@ const IncidentLayout = () => {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
   const user = useSelector((state) => state.auth.user);
+  const { logoutHandler } = useAuth();
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [isTopProfileOpen, setIsTopProfileOpen] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const profileMenuRef = useRef(null);
+  const topProfileRef = useRef(null);
   const paths = useWorkspacePaths();
   const isPrivileged = canManageWorkspace(user?.role);
 
@@ -214,27 +220,36 @@ const IncidentLayout = () => {
                 <div className="text-[10px] text-text-muted uppercase font-bold truncate">
                   {user?.role || "—"} · {companyLabel}
                 </div>
-              </div>
+                <div className="flex-1 overflow-hidden text-left">
+                  <div className="text-sm font-bold text-text truncate">{user?.name || "User"}</div>
+                  <div className="text-[10px] text-text-muted uppercase font-bold truncate">
+                    {user?.role || "—"} · {companyLabel}
+                  </div>
+                </div>
+              </button>
+              {isProfileMenuOpen && (
+                <div className="absolute bottom-full left-0 mb-2 w-full bg-bg border border-border rounded-xl shadow-lg overflow-hidden z-20">
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="w-full text-left px-4 py-2.5 text-error hover:bg-error/10 transition-colors font-semibold">
+                    Logout
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </aside>
 
         <div className="flex-1 flex flex-col h-screen overflow-hidden bg-bg min-h-0">
+          {hideTopNav && (
+            <header className="h-14 border-b border-border flex items-center px-8 shrink-0 bg-bg">
+              <PageBackButton fallbackPath={paths.dashboard} />
+            </header>
+          )}
           {!hideTopNav && (
             <header className="h-20 border-b border-border flex items-center justify-between px-8 shrink-0">
-              <div className="flex items-center gap-8">
-                <nav className="hidden md:flex items-center gap-6 pt-0.5">
-                  <span className="text-lg font-bold text-text-muted uppercase">
-                    Systems
-                  </span>
-                  <span className="text-lg font-bold text-text-muted uppercase">
-                    Responders
-                  </span>
-                  <span className="text-lg font-bold text-text-muted uppercase">
-                    Logs
-                  </span>
-                </nav>
-              </div>
+              <PageBackButton fallbackPath={paths.dashboard} />
 
               <div className="flex items-center gap-4">
                 <div className="relative w-64">
@@ -320,8 +335,21 @@ const IncidentLayout = () => {
                   <FiBell size={18} />
                   <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-error rounded-full border-2 border-bg" />
                 </button>
-                <div className="w-8 h-8 rounded-full bg-bg-muted border border-border overflow-hidden ml-3 flex items-center justify-center text-xs font-bold text-text">
-                  {(user?.name || "?").charAt(0).toUpperCase()}
+                <div ref={topProfileRef} className="relative ml-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsTopProfileOpen((prev) => !prev)}
+                    className="w-8 h-8 rounded-full bg-bg-muted border border-border overflow-hidden flex items-center justify-center text-xs font-bold text-text hover:bg-bg-surface transition-colors">
+                    {(user?.name || "?").charAt(0).toUpperCase()}
+                  </button>
+                  {isTopProfileOpen && (
+                    <div className="absolute top-full right-0 mt-2 w-56 bg-bg border border-border rounded-xl shadow-lg p-3 z-20">
+                      <div className="text-sm font-bold text-text truncate">{user?.name || "User"}</div>
+                      <div className="text-xs text-text-muted uppercase font-bold mt-1 truncate">
+                        {companyLabel}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </header>

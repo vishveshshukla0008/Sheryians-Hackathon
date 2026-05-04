@@ -44,12 +44,6 @@ const formatRelative = (iso) => {
   return `${d}d ago`;
 };
 
-const startOfLocalDay = (d = new Date()) => {
-  const x = new Date(d);
-  x.setHours(0, 0, 0, 0);
-  return x.getTime();
-};
-
 const IncidentDashboard = () => {
   const navigate = useNavigate();
   const paths = useWorkspacePaths();
@@ -91,10 +85,7 @@ const IncidentDashboard = () => {
   const stats = useMemo(() => {
     const open = incidents.filter((i) => i.status === "OPEN").length;
     const investigating = incidents.filter((i) => i.status === "INVESTIGATING").length;
-    const dayStart = startOfLocalDay();
-    const resolvedToday = incidents.filter(
-      (i) => i.status === "RESOLVED" && i.resolvedAt && new Date(i.resolvedAt).getTime() >= dayStart
-    ).length;
+    const resolved = incidents.filter((i) => i.status === "RESOLVED").length;
 
     const dayAgo = Date.now() - 86400000;
     const openNew24h = incidents.filter(
@@ -128,7 +119,7 @@ const IncidentDashboard = () => {
     return {
       open,
       investigating,
-      resolvedToday,
+      resolved,
       openNew24h,
       avgMttrMin,
       oldestInvestigating: oldestInv,
@@ -155,6 +146,12 @@ const IncidentDashboard = () => {
 
   const companyName = user?.companyId?.name || user?.company?.name || "your workspace";
   const displayName = user?.name || "there";
+  const cardBaseClass =
+    "bg-bg-surface border border-border rounded-lg p-6 flex flex-col gap-3 text-left hover:border-primary/40 hover:bg-primary/5 transition-colors";
+
+  const goToStatusFilter = (status) => {
+    navigate(`${paths.incidents}?status=${encodeURIComponent(status)}`);
+  };
 
   return (
     <div className="flex-1 overflow-y-auto bg-bg p-8 w-full h-full">
@@ -188,7 +185,7 @@ const IncidentDashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
-        <div className="bg-bg-surface border border-border rounded-lg p-6 flex flex-col justify- gap-3">
+        <button type="button" onClick={() => goToStatusFilter("OPEN")} className={cardBaseClass}>
           <span className="text-md font-extrabold text-text-muted uppercase">Open</span>
           <div>
             <div className="text-5xl font-black text-error mb-3">{isLoading ? "—" : stats.open}</div>
@@ -198,9 +195,9 @@ const IncidentDashboard = () => {
               <span>opened in last 24h</span>
             </div>
           </div>
-        </div>
+        </button>
 
-        <div className="bg-bg-surface border border-border rounded-lg p-6 flex flex-col justify- gap-3">
+        <button type="button" onClick={() => goToStatusFilter("INVESTIGATING")} className={cardBaseClass}>
           <span className="text-md font-extrabold text-text-muted uppercase">Investigating</span>
           <div>
             <div className="text-5xl font-black text-ring mb-3">{isLoading ? "—" : stats.investigating}</div>
@@ -210,12 +207,12 @@ const IncidentDashboard = () => {
                 : "No active investigations"}
             </div>
           </div>
-        </div>
+        </button>
 
-        <div className="bg-bg-surface border border-border rounded-lg p-6 flex flex-col justify- gap-3">
-          <span className="text-md font-extrabold text-text-muted uppercase">Resolved Today</span>
+        <button type="button" onClick={() => goToStatusFilter("RESOLVED")} className={cardBaseClass}>
+          <span className="text-md font-extrabold text-text-muted uppercase">Resolved</span>
           <div>
-            <div className="text-5xl font-black text-success mb-3">{isLoading ? "—" : stats.resolvedToday}</div>
+            <div className="text-5xl font-black text-success mb-3">{isLoading ? "—" : stats.resolved}</div>
             <div className="flex items-center text-md text-text-muted font-medium gap-1">
               <FiArrowDown className="text-success" size={20} />
               <span>
@@ -223,9 +220,9 @@ const IncidentDashboard = () => {
               </span>
             </div>
           </div>
-        </div>
+        </button>
 
-        <div className="bg-bg-surface border border-border rounded-lg p-6 flex flex-col justify- gap-3">
+        <button type="button" onClick={() => navigate(paths.team)} className={cardBaseClass}>
           <span className="text-md font-extrabold text-text-muted uppercase">Team Members</span>
           <div>
             <div className="text-5xl font-black text-primary mb-3">{isLoading ? "—" : stats.memberCount}</div>
@@ -233,7 +230,7 @@ const IncidentDashboard = () => {
               {stats.recentlyActiveMembers} logged in last 24h
             </div>
           </div>
-        </div>
+        </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

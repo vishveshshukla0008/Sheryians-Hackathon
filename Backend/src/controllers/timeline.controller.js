@@ -57,6 +57,17 @@ export const addTimelineEvent = async (req, res, next) => {
       return next(new ApiError(404, "Incident not found"));
     }
 
+    const privilegedRoles = ["ADMIN", "CEO"];
+    if (!privilegedRoles.includes(req.user.role)) {
+      const uid = String(req.user._id);
+      const assignedIds = (incident.assignedUsers || []).map((aid) => String(aid));
+      if (!assignedIds.includes(uid)) {
+        return next(
+          new ApiError(403, "You must be assigned to this incident to post timeline updates")
+        );
+      }
+    }
+
     const { message } = req.body;
 
     const timelineEvent = await Timeline.create({

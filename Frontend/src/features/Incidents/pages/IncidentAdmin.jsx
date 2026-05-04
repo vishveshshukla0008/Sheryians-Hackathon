@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import React, { useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 import DeclareIncidentModal from "../components/DeclareIncidentModal";
 import Button from "../../../shared/components/Button";
@@ -36,6 +36,7 @@ const toElapsedTime = (incident, nowTs) => {
 
 const IncidentAdmin = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const paths = useWorkspacePaths();
   const user = useSelector((state) => state.auth.user);
   const isPrivileged = canManageWorkspace(user?.role);
@@ -69,6 +70,39 @@ const IncidentAdmin = () => {
   useEffect(() => {
     fetchIncidents();
   }, []);
+
+  const filtersActive = useMemo(() => {
+    const p = new URLSearchParams(location.search);
+    return Boolean(p.get("q")?.trim() || p.get("status")?.trim());
+  }, [location.search]);
+
+  const filteredIncidents = useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    const query = params.get("q")?.trim().toLowerCase();
+    const status = params.get("status")?.trim().toUpperCase();
+
+    let result = incidents;
+
+    if (status) {
+      result = result.filter((incident) => incident.status === status);
+    }
+
+    if (!query) return result;
+
+    return result.filter((incident) => {
+      const fields = [
+        incident.title,
+        incident.description,
+        incident.status,
+        incident.severity,
+        getIncidentDisplayId(incident._id),
+      ]
+        .filter(Boolean)
+        .map((value) => String(value).toLowerCase());
+
+      return fields.some((value) => value.includes(query));
+    });
+  }, [incidents, location.search]);
 
   return (
     <div className="flex-1 overflow-y-auto bg-bg p-8 w-full h-full">
@@ -126,15 +160,15 @@ const IncidentAdmin = () => {
             <div className="px-6 py-8 text-error text-lg">{errorMessage}</div>
           )}
 
-          {!isLoading && !errorMessage && incidents.length === 0 && (
+          {!isLoading && !errorMessage && filteredIncidents.length === 0 && (
             <div className="px-6 py-8 text-text-muted text-lg">
-              No active incidents found.
+              {filtersActive ? "No incidents match your filters." : "No incidents yet."}
             </div>
           )}
 
-          {!isLoading && !errorMessage && incidents.length > 0 && (
+          {!isLoading && !errorMessage && filteredIncidents.length > 0 && (
             <div className="divide-y divide-border">
-              {incidents.map((inc) => (
+              {filteredIncidents.map((inc) => (
               <div
                 key={inc._id}
                 onClick={() => navigate(paths.incidentDetail(inc._id))}
