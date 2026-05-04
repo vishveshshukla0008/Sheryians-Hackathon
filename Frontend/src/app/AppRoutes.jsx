@@ -28,7 +28,7 @@ import Workspaces from "../pages/Docs/platform/WorkSpace";
 import MembersRoles from "../pages/Docs/platform/MembersRoles";
 import TimelineUpdates from "../pages/Docs/platform/TimelineUpdates";
 import StatusPage from "../pages/Docs/platform/StatusPage";
-import AIPostmortem from "../pages/Docs/platform/AIPostmortem";
+import AIPostmortem from "../pages/Docs/platform/AiPostmortem";
 
 import EmailNotifications from "../pages/Docs/integrations/EmailNotification";
 import SlackIntegration from "../pages/Docs/integrations/SlackIntegration";
