@@ -46,8 +46,8 @@ const SignupPage = () => {
   };
 
   const availableRoles = [
-    { id: "developer", label: "Developer" },
-    { id: "admin", label: "Admin" },
+    { id: "DEVELOPER", label: "Developer" },
+    { id: "ADMIN", label: "Admin" },
     { id: "CEO", label: "CEO" },
   ];
 

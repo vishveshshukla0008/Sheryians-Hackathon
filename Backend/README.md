@@ -1,6 +1,6 @@
 # Smart Incident Response Platform — Backend API
 
-Production-oriented REST API for **IncidentPro**: multi-tenant incident management, timeline collaboration, AI postmortems (Mistral), email notifications, public status pages, and B2B contact / sales enquiries.
+Production-oriented REST API for **MayDayOps**: multi-tenant incident management, timeline collaboration, AI postmortems (Mistral), email notifications, public status pages, and B2B contact / sales enquiries.
 
 ---
 
@@ -20,15 +20,15 @@ Production-oriented REST API for **IncidentPro**: multi-tenant incident manageme
 
 ## Stack & conventions
 
-| Layer | Technology |
-|--------|------------|
-| Runtime | Node.js (ES modules) |
-| Framework | Express 4 |
-| Database | MongoDB + Mongoose 8 |
-| Auth | JWT (`Authorization: Bearer <token>`) |
-| Email | Nodemailer (e.g. Brevo SMTP) |
-| AI | Mistral (OpenAI-compatible chat API) |
-| Realtime | Socket.IO |
+| Layer     | Technology                            |
+| --------- | ------------------------------------- |
+| Runtime   | Node.js (ES modules)                  |
+| Framework | Express 4                             |
+| Database  | MongoDB + Mongoose 8                  |
+| Auth      | JWT (`Authorization: Bearer <token>`) |
+| Email     | Nodemailer (e.g. Brevo SMTP)          |
+| AI        | Mistral (OpenAI-compatible chat API)  |
+| Realtime  | Socket.IO                             |
 
 - **Base path:** all HTTP routes below are prefixed with `/api`.
 - **`Content-Type`:** `application/json` for bodies unless noted (e.g. `verify-email` uses query params).
@@ -40,19 +40,19 @@ Production-oriented REST API for **IncidentPro**: multi-tenant incident manageme
 
 Copy `.env.example` to `.env` and fill values.
 
-| Variable | Purpose |
-|----------|---------|
-| `PORT` | HTTP port (default `5000`) |
-| `NODE_ENV` | `development` \| `production` |
-| `MONGO_URI` | MongoDB connection string |
-| `JWT_SECRET` | Secret for JWT signing |
-| `JWT_EXPIRES_IN` | Token lifetime (e.g. `7d`) |
-| `BREVO_SMTP_USER`, `BREVO_SMTP_PASS` | SMTP credentials |
-| `MAIL_FROM` | From address for transactional mail |
-| `FRONTEND_URL` | Allowed CORS origin + invite / incident links |
-| `MISTRAL_API_KEY` | Required for AI postmortem generation |
-| `MISTRAL_MODEL` | Optional; default `mistral-small-latest` |
-| `CONTACT_TEAM_EMAIL` | Inbox for B2B contact form notifications (optional; enquiries still persisted in MongoDB) |
+| Variable                             | Purpose                                                                                   |
+| ------------------------------------ | ----------------------------------------------------------------------------------------- |
+| `PORT`                               | HTTP port (default `5000`)                                                                |
+| `NODE_ENV`                           | `development` \| `production`                                                             |
+| `MONGO_URI`                          | MongoDB connection string                                                                 |
+| `JWT_SECRET`                         | Secret for JWT signing                                                                    |
+| `JWT_EXPIRES_IN`                     | Token lifetime (e.g. `7d`)                                                                |
+| `BREVO_SMTP_USER`, `BREVO_SMTP_PASS` | SMTP credentials                                                                          |
+| `MAIL_FROM`                          | From address for transactional mail                                                       |
+| `FRONTEND_URL`                       | Allowed CORS origin + invite / incident links                                             |
+| `MISTRAL_API_KEY`                    | Required for AI postmortem generation                                                     |
+| `MISTRAL_MODEL`                      | Optional; default `mistral-small-latest`                                                  |
+| `CONTACT_TEAM_EMAIL`                 | Inbox for B2B contact form notifications (optional; enquiries still persisted in MongoDB) |
 
 ---
 
@@ -113,10 +113,10 @@ Common HTTP statuses: **400** validation, **401** auth, **403** forbidden (role 
 
 Configured in `src/app.js`:
 
-| Scope | Limit |
-|--------|--------|
+| Scope            | Limit                            |
+| ---------------- | -------------------------------- |
 | `*` under `/api` | 100 requests / 15 minutes per IP |
-| `/api/auth` | 20 requests / 15 minutes per IP |
+| `/api/auth`      | 20 requests / 15 minutes per IP  |
 
 ---
 
@@ -547,10 +547,10 @@ Incident resource fields (Mongoose) include:
 
 **Query (optional):**
 
-| Param | Values |
-|--------|--------|
-| `status` | `OPEN`, `INVESTIGATING`, `RESOLVED` |
-| `severity` | `P1`, `P2`, `P3` |
+| Param      | Values                              |
+| ---------- | ----------------------------------- |
+| `status`   | `OPEN`, `INVESTIGATING`, `RESOLVED` |
+| `severity` | `P1`, `P2`, `P3`                    |
 
 **Response `200`:**
 
@@ -797,29 +797,29 @@ Public B2B enquiry; stored in **`ContactInquiry`** plus optional email to `CONTA
   "name": "Rahul Verma",
   "companyName": "Acme Logistics",
   "email": "rahul@acme.com",
-  "message": "We want IncidentPro for our ops team (~50 seats). Please share onboarding steps.",
+  "message": "We want MayDayOps for our ops team (~50 seats). Please share onboarding steps.",
   "phone": "+91 98765 43210",
   "subject": "Enterprise purchase",
   "intent": "purchase_company"
 }
 ```
 
-| Field | Required | Notes |
-|--------|----------|--------|
-| `name` | yes | Contact person |
-| `companyName` | yes | Company interested in product |
-| `email` | yes | Valid email |
-| `message` | yes | Min length 10 |
-| `subject` | no | Max 200 chars; defaults server-side |
-| `phone` | no | Max 40 chars |
-| `intent` | no | `purchase_company` (default), `demo`, `pricing`, `general` |
+| Field         | Required | Notes                                                      |
+| ------------- | -------- | ---------------------------------------------------------- |
+| `name`        | yes      | Contact person                                             |
+| `companyName` | yes      | Company interested in product                              |
+| `email`       | yes      | Valid email                                                |
+| `message`     | yes      | Min length 10                                              |
+| `subject`     | no       | Max 200 chars; defaults server-side                        |
+| `phone`       | no       | Max 40 chars                                               |
+| `intent`      | no       | `purchase_company` (default), `demo`, `pricing`, `general` |
 
 **Response `201`:**
 
 ```json
 {
   "success": true,
-  "message": "Thanks — we've received your request. Our team will reach out about using IncidentPro for your company.",
+  "message": "Thanks — we've received your request. Our team will reach out about using MayDayOps for your company.",
   "data": { "id": "507f1f77bcf86cd799439011" }
 }
 ```
@@ -841,12 +841,12 @@ Server attaches Socket.IO alongside HTTP (`FRONTEND_URL` CORS).
 
 **Server events (subset):**
 
-| Event | When |
-|--------|------|
-| `incident:created` | New incident created |
-| `incident:updated` | Status (or other) update |
-| `incident:assigned` | Assignees changed |
-| `timeline:new` | New timeline entry on an incident |
+| Event               | When                              |
+| ------------------- | --------------------------------- |
+| `incident:created`  | New incident created              |
+| `incident:updated`  | Status (or other) update          |
+| `incident:assigned` | Assignees changed                 |
+| `timeline:new`      | New timeline entry on an incident |
 
 ---
 

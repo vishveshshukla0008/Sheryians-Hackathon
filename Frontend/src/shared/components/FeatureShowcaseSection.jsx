@@ -370,7 +370,7 @@ const ALERT_COPY = {
     stageLine: "Stage: Acknowledged · Priority: P2",
     title: "Acknowledged — on-call loop paused",
     body: "Primary acknowledged from mobile. Noise suppression rules muted duplicate correlated alerts. SLA acknowledgement timer started; next escalation window opens in 18 minutes unless severity bumps.",
-    footer: "Notified: Anas Ali · Priya Singh · bridge standby channel armed.",
+    footer: "Notified: Anas Ali · Vishwesh Shukla · bridge standby channel armed.",
   },
   escalate: {
     stageLine: "Stage: Escalating · Priority: P2 → P1 candidate",
@@ -484,7 +484,7 @@ function PanelIncidentResponse() {
 const TIMELINE_ROWS = [
   {
     id: "1",
-    letter: "A",
+    letter: "AA",
     ring: "ring-orange-400",
     name: "Anas Ali",
     role: "ADMIN",
@@ -493,18 +493,18 @@ const TIMELINE_ROWS = [
   },
   {
     id: "2",
-    letter: "P",
-    ring: "ring-blue-500",
-    name: "Priya Singh",
+    letter: "VS",
+    ring: "ring-orange-400",
+    name: "Vishwesh Shukla",
     role: "DEVELOPER",
     body: "DB connections maxed out. Found N+1 query in order-service v2.3.1. Today's deploy introduced this.",
     meta: "10:15:30 PM · _id: 665t1…",
   },
   {
     id: "3",
-    letter: "S",
+    letter: "RC",
     ring: "ring-slate-400",
-    name: "Sahil Verma",
+    name: "Rudra Choudhary",
     role: "MEMBER",
     body: "Rollback of order-service to v2.2.8 initiated. ETA 8 min. Monitoring LB health.",
     meta: "10:28:05 PM",

@@ -29,7 +29,7 @@ const wrap = (content) => `
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>IncidentPro</title>
+  <title>MayDayOps</title>
 </head>
 <body style="margin:0;padding:0;background-color:${C.bg};font-family:Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased;">
   <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:${C.bg};padding:40px 16px;">
@@ -46,7 +46,7 @@ const wrap = (content) => `
                     <div style="width:38px;height:38px;background-color:${C.accent};border-radius:10px;text-align:center;line-height:38px;font-size:20px;">&#9889;</div>
                   </td>
                   <td style="padding-left:12px;vertical-align:middle;">
-                    <span style="font-size:18px;font-weight:700;color:${C.white};letter-spacing:-0.3px;">IncidentPro</span>
+                    <span style="font-size:18px;font-weight:700;color:${C.white};letter-spacing:-0.3px;">MayDayOps</span>
                   </td>
                 </tr>
               </table>
@@ -71,7 +71,7 @@ const wrap = (content) => `
           <tr>
             <td style="background-color:${C.inner};border:1px solid ${C.border};border-top:none;border-radius:0 0 16px 16px;padding:18px 28px;">
               <p style="margin:0;font-size:12px;color:${C.muted};line-height:1.6;text-align:center;">
-                This email was sent by IncidentPro &bull; You are receiving this because someone invited you.<br/>
+                This email was sent by MayDayOps &bull; You are receiving this because someone invited you.<br/>
                 If you did not expect this email, you can safely ignore it.
               </p>
             </td>
@@ -134,7 +134,7 @@ export const sendInviteEmail = async ({
     <!-- Body text -->
     <p style="margin:0 0 8px 0;font-size:15px;color:${C.muted};line-height:1.7;">
       <strong style="color:${C.text};">${invitedByName}</strong> has invited you to join
-      <strong style="color:${C.white};">${companyName}</strong> on IncidentPro
+      <strong style="color:${C.white};">${companyName}</strong> on MayDayOps
       &mdash; the smart incident response platform.
     </p>
 
@@ -163,7 +163,7 @@ export const sendInviteEmail = async ({
 
   await sendMail({
     to,
-    subject: `You're invited to join ${companyName} on IncidentPro`,
+    subject: `You're invited to join ${companyName} on MayDayOps`,
     html: wrap(content),
   });
 };
@@ -193,7 +193,7 @@ export const sendVerificationEmail = async ({
 
     <!-- Body -->
     <p style="margin:0 0 16px 0;font-size:15px;color:${C.muted};line-height:1.7;">
-      Hi <strong style="color:${C.text};">${userName}</strong>, welcome to IncidentPro!
+      Hi <strong style="color:${C.text};">${userName}</strong>, welcome to MayDayOps!
       Please verify your email address to activate your account and get started.
     </p>
 
@@ -213,13 +213,13 @@ export const sendVerificationEmail = async ({
     ${btn("Verify Email Address &rarr;", verifyLink)}
 
     <p style="margin:16px 0 20px 0;font-size:12px;color:${C.muted};">
-      If you did not create an IncidentPro account, you can safely ignore this email.
+      If you did not create an MayDayOps account, you can safely ignore this email.
     </p>
   `;
 
   await sendMail({
     to,
-    subject: "Verify your email — IncidentPro",
+    subject: "Verify your email — MayDayOps",
     html: wrap(content),
   });
 };
@@ -237,7 +237,7 @@ export const sendPasswordResetEmail = async ({ to, resetLink, userName }) => {
       </tr>
     </table>
     <h1 style="margin:0 0 12px 0;font-size:24px;font-weight:700;color:${C.white};line-height:1.3;">
-      Reset your IncidentPro password
+      Reset your MayDayOps password
     </h1>
     <p style="margin:0 0 16px 0;font-size:15px;color:${C.muted};line-height:1.7;">
       Hi <strong style="color:${C.text};">${userName}</strong>, we received a request to reset your password.
@@ -260,7 +260,7 @@ export const sendPasswordResetEmail = async ({ to, resetLink, userName }) => {
 
   await sendMail({
     to,
-    subject: "Reset your IncidentPro password",
+    subject: "Reset your MayDayOps password",
     html: wrap(content),
   });
 };
@@ -332,7 +332,7 @@ export const sendAssignmentEmail = async ({
     ${btn("View Incident &rarr;", incidentLink)}
 
     <p style="margin:16px 0 20px 0;font-size:12px;color:${C.muted};">
-      Login to IncidentPro to post updates and collaborate with your team in real-time.
+      Login to MayDayOps to post updates and collaborate with your team in real-time.
     </p>
   `;
 
@@ -375,7 +375,7 @@ export const sendContactSubmissionEmail = async ({
       <table width="100%" style="max-width:560px;background:${C.card};border:1px solid ${C.border};border-radius:14px;">
         <tr><td style="padding:24px 26px;">
           <p style="margin:0 0 6px;color:${C.accent};font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;">New lead — company interest</p>
-          <p style="margin:0 0 18px;color:${C.white};font-size:18px;font-weight:700;">Someone wants IncidentPro for their company</p>
+          <p style="margin:0 0 18px;color:${C.white};font-size:18px;font-weight:700;">Someone wants MayDayOps for their company</p>
           <p style="margin:0 0 8px;color:${C.text};font-size:14px;">
             <strong>Company:</strong> ${escaped(companyName)}<br/>
             <strong>Contact:</strong> ${escaped(fromName)}<br/>
@@ -401,7 +401,7 @@ export const sendContactSubmissionEmail = async ({
 
   await sendMail({
     to,
-    subject: `[IncidentPro lead] ${companyName} — ${subject}`,
+    subject: `[MayDayOps lead] ${companyName} — ${subject}`,
     html,
   });
 };

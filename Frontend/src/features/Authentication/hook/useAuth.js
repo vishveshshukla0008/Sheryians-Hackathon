@@ -122,5 +122,19 @@ export const useAuth = () => {
         }
     };
 
-    return { handleRegister, loginHandler, logoutHandler, getCurrentUser, handleResendVerification, handleVerifyAccount, handleForgotPasswordLinkSent, handleResetPassword };
+    const handleEmailVerification = async (token) => {
+        try {
+            dispatch(setAuthLoading(true));
+            const response = await authApi.emailVerification(token);
+            toast.success(response.message || "Email verified successfully!");
+            return response;
+        } catch (error) {
+            toast.error(error.message || "Email verification failed");
+            return error;
+        } finally {
+            dispatch(setAuthLoading(false));
+        }
+    }
+
+    return { handleRegister, loginHandler, logoutHandler, getCurrentUser, handleResendVerification, handleVerifyAccount, handleForgotPasswordLinkSent, handleResetPassword, handleEmailVerification };
 };
