@@ -34,7 +34,7 @@ export const authApi = {
         return response;
     },
     emailVerification: async (token) => {
-        const response = await api.get(`/auth/verify-email/${token}`);
+        const response = await api.get(`/auth/verify-email/?token=${token}`);
         return response;
     }
 }
