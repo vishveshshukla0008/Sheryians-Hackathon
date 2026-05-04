@@ -34,8 +34,7 @@ const VerifyEmailPage = () => {
   }
 
   const handleOpenEmail = () => {
-    // A generic way to open the default email client
-    window.location.href = `mailto:${email}`;
+    window.open("https://mail.google.com", "_blank");
   };
 
   return (

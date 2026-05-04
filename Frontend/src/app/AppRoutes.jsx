@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes, Navigate } from "react-router";
-
+import EmailVerificationPage from "../features/Authentication/pages/EmailVerificationPage"
 import RootLayout from "../layouts/RootLayout";
 import Authlayout from "../layouts/Authlayout";
 import IncidentLayout from "../layouts/IncidentLayout";
@@ -53,7 +53,6 @@ const AppRoutes = () => {
 
           {/* DOCS */}
           <Route path="/docs" element={<DocsLayout />}>
-            {" "}
             <Route index element={<Docs />} />
             <Route path="quick-start" element={<QuickStart />} />
             <Route path="first-incident" element={<FirstIncident />} />
@@ -80,6 +79,7 @@ const AppRoutes = () => {
           <Route path="forget-password" element={<ForgetPassword />} />
           <Route path="reset-password" element={<ResetPassword />} />
           <Route path="verify-email" element={<VerifyEmailPage />} />
+          <Route path="verify-account" element={<EmailVerificationPage />} />
         </Route>
 
         {/* Workspace: ADMIN/CEO under /admin/*; DEVELOPER/MEMBER under /dashboard, /incidents, … */}

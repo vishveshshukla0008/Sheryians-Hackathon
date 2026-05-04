@@ -78,13 +78,18 @@ const IncidentLayout = () => {
                       to={link.path}
                       className={`flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors relative ${
                         isActive
-                          ? "bg-primary/10 text-primary-foreground border-l-[3px] border-primary"
+                          ? "bg-primary/10 text-text border-l-[3px] border-primary"
                           : "text-text-muted hover:text-text hover:bg-primary/10"
                       }`}>
                       <div className="flex items-center gap-3">
                         <Icon size={18} />
                         <span className="font-medium">{link.name}</span>
                       </div>
+                      {link.badge && (
+                        <span className="bg-error text-white absolute left-1/2 top-1 text-error-foreground text-sm h-5 w-5 flex items-center justify-center font-bold px-1.5 py-0.5 rounded-full">
+                          {link.badge}
+                        </span>
+                      )}
                     </Link>
                   );
                 })}

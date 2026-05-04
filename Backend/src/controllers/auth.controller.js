@@ -63,7 +63,7 @@ export const register = async (req, res, next) => {
     user.emailVerificationExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
     await user.save();
 
-    const verifyLink = `${getRequestBaseUrl(req)}/api/auth/verify-email?token=${emailToken}`;
+    const verifyLink = `${process.env.FRONTEND_URL}/verify-account?token=${emailToken}`;
     sendVerificationEmail({
       to: user.email,
       verifyLink,
