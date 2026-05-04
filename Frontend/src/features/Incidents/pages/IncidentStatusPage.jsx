@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import Button from "../../../shared/components/Button";
 import DeclareIncidentModal from "../components/DeclareIncidentModal";
+import Loader from "../../../shared/components/Loader";
 import { FiLink2 } from "react-icons/fi";
 import { canManageWorkspace } from "../../../lib/workspacePaths";
 import { api } from "../../../api/httpClient";
@@ -32,7 +33,8 @@ const IncidentStatusPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const companyName = user?.companyId?.name || user?.company?.name || "Your workspace";
+  const companyName =
+    user?.companyId?.name || user?.company?.name || "Your workspace";
 
   const fetchIncidents = useCallback(async () => {
     try {
@@ -51,9 +53,11 @@ const IncidentStatusPage = () => {
     fetchIncidents();
   }, [fetchIncidents]);
 
+  if (isLoading) return <Loader />;
+
   const activeIncidents = useMemo(
     () => incidents.filter((i) => i.status !== "RESOLVED"),
-    [incidents]
+    [incidents],
   );
 
   const sortedActive = useMemo(() => {
@@ -111,15 +115,22 @@ const IncidentStatusPage = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-bg overflow-y-auto">
+    <div className="flex-1 flex flex-col min-h-0 bg-bg overflow-y-auto">
       <div className="h-20 border-b border-border flex items-center justify-between px-8 shrink-0 bg-bg">
         <h1 className="text-xl font-bold text-text">Status Page</h1>
         {isPrivileged && (
           <div className="flex items-center gap-4">
-            <Button variant="secondary" size="sm" className="font-bold flex items-center gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              className="font-bold flex items-center gap-2">
               <FiLink2 /> Invite Link Demo
             </Button>
-            <Button onClick={() => setIsModalOpen(true)} variant="primary" size="sm" className="font-bold">
+            <Button
+              onClick={() => setIsModalOpen(true)}
+              variant="primary"
+              size="sm"
+              className="font-bold">
               + Create Incident
             </Button>
           </div>
@@ -128,24 +139,27 @@ const IncidentStatusPage = () => {
 
       <div className="flex-1 flex flex-col items-center py-12 px-4">
         {errorMessage && (
-          <p className="text-error text-sm font-medium mb-4 max-w-3xl w-full text-center">{errorMessage}</p>
+          <p className="text-error text-sm font-medium mb-4 max-w-3xl w-full text-center">
+            {errorMessage}
+          </p>
         )}
 
         <div
-          className={`${systemBanner.bg} ${systemBanner.border} border rounded-full px-4 py-1.5 flex items-center gap-2 mb-6`}
-        >
-          <span className={`${systemBanner.fg} font-bold text-xl`}>{systemBanner.text}</span>
+          className={`${systemBanner.bg} ${systemBanner.border} border rounded-full px-4 py-1.5 flex items-center gap-2 mb-6`}>
+          <span className={`${systemBanner.fg} font-bold text-xl`}>
+            {systemBanner.text}
+          </span>
         </div>
 
-        <h1 className="text-4xl font-bold text-text mb-2 text-center">{companyName}</h1>
+        <h1 className="text-4xl font-bold text-text mb-2 text-center">
+          {companyName}
+        </h1>
         <p className="text-text-muted text-xl mb-12 text-center max-w-2xl">
-          Live incident status for your organization. Open and investigating items are shown below.
+          Live incident status for your organization. Open and investigating
+          items are shown below.
         </p>
 
         <div className="w-full max-w-3xl flex flex-col gap-3 mb-12">
-          {isLoading && (
-            <div className="text-center text-text-muted py-8">Loading status…</div>
-          )}
           {!isLoading && sortedActive.length === 0 && (
             <div className="bg-bg-surface border border-border rounded-lg p-8 text-center text-text-muted shadow-sm">
               No active incidents. All monitored systems are clear.
@@ -155,16 +169,16 @@ const IncidentStatusPage = () => {
             sortedActive.map((inc) => (
               <div
                 key={inc._id}
-                className="bg-bg-surface border border-border rounded-lg p-5 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 shadow-sm"
-              >
+                className="bg-bg-surface border border-border rounded-lg p-5 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 shadow-sm">
                 <div className="flex items-start gap-3 min-w-0 flex-1">
                   <span
-                    className={`px-2.5 py-1 rounded-md border text-xs font-bold shrink-0 mt-0.5 ${severityBadgeClass(inc.severity)}`}
-                  >
+                    className={`px-2.5 py-1 rounded-md border text-xs font-bold shrink-0 mt-0.5 ${severityBadgeClass(inc.severity)}`}>
                     {inc.severity}
                   </span>
                   <div className="min-w-0">
-                    <h4 className="text-text font-bold text-lg mb-1 wrap-break-word">{inc.title}</h4>
+                    <h4 className="text-text font-bold text-lg mb-1 wrap-break-word">
+                      {inc.title}
+                    </h4>
                     <p className="text-text-muted text-md font-medium line-clamp-2">
                       {inc.description || "No description provided."}
                     </p>
@@ -173,22 +187,32 @@ const IncidentStatusPage = () => {
                     </p>
                   </div>
                 </div>
-                <div className={`flex items-center gap-2 shrink-0 ${statusTextClass(inc)}`}>
-                  <span className="text-lg font-bold">{formatStatusLabel(inc.status)}</span>
+                <div
+                  className={`flex items-center gap-2 shrink-0 ${statusTextClass(inc)}`}>
+                  <span className="text-lg font-bold">
+                    {formatStatusLabel(inc.status)}
+                  </span>
                 </div>
               </div>
             ))}
         </div>
 
         <div className="w-full max-w-3xl">
-          <h3 className="text-md font-bold text-text-muted uppercase mb-4">Summary</h3>
+          <h3 className="text-md font-bold text-text-muted uppercase mb-4">
+            Summary
+          </h3>
           <div className="bg-bg-surface border border-border rounded-xl p-5 shadow-sm text-text-muted text-md space-y-2">
             <p>
-              <span className="font-bold text-text">{activeIncidents.length}</span> active incident
+              <span className="font-bold text-text">
+                {activeIncidents.length}
+              </span>{" "}
+              active incident
               {activeIncidents.length === 1 ? "" : "s"}
             </p>
             <p>
-              <span className="font-bold text-text">{incidents.filter((i) => i.status === "RESOLVED").length}</span>{" "}
+              <span className="font-bold text-text">
+                {incidents.filter((i) => i.status === "RESOLVED").length}
+              </span>{" "}
               resolved (total in workspace)
             </p>
           </div>

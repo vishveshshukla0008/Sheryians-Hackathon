@@ -4,6 +4,7 @@ import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 import DeclareIncidentModal from "../components/DeclareIncidentModal";
 import Button from "../../../shared/components/Button";
+import Loader from "../../../shared/components/Loader";
 import { useWorkspacePaths } from "../hooks/useWorkspacePaths";
 import { canManageWorkspace } from "../../../lib/workspacePaths";
 import { api } from "../../../api/httpClient";
@@ -15,7 +16,8 @@ const formatStatusLabel = (status = "") => {
   return status;
 };
 
-const getIncidentDisplayId = (id = "") => `INC-${String(id).slice(-5).toUpperCase()}`;
+const getIncidentDisplayId = (id = "") =>
+  `INC-${String(id).slice(-5).toUpperCase()}`;
 
 const toElapsedTime = (incident, nowTs) => {
   if (!incident?.createdAt) return "--";
@@ -27,7 +29,10 @@ const toElapsedTime = (incident, nowTs) => {
   const diffMs = Math.max(0, endTs - startTs);
   const totalSeconds = Math.floor(diffMs / 1000);
   const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
-  const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
+  const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(
+    2,
+    "0",
+  );
   const seconds = String(totalSeconds % 60).padStart(2, "0");
   return `${hours}:${minutes}:${seconds}`;
 };
@@ -84,12 +89,14 @@ const IncidentDashboard = () => {
 
   const stats = useMemo(() => {
     const open = incidents.filter((i) => i.status === "OPEN").length;
-    const investigating = incidents.filter((i) => i.status === "INVESTIGATING").length;
+    const investigating = incidents.filter(
+      (i) => i.status === "INVESTIGATING",
+    ).length;
     const resolved = incidents.filter((i) => i.status === "RESOLVED").length;
 
     const dayAgo = Date.now() - 86400000;
     const openNew24h = incidents.filter(
-      (i) => i.status === "OPEN" && new Date(i.createdAt).getTime() > dayAgo
+      (i) => i.status === "OPEN" && new Date(i.createdAt).getTime() > dayAgo,
     ).length;
 
     const thirtyDaysAgo = Date.now() - 30 * 86400000;
@@ -97,23 +104,25 @@ const IncidentDashboard = () => {
       (i) =>
         i.status === "RESOLVED" &&
         i.resolvedAt &&
-        new Date(i.resolvedAt).getTime() >= thirtyDaysAgo
+        new Date(i.resolvedAt).getTime() >= thirtyDaysAgo,
     );
     const mttrMs = recentResolved.map(
-      (i) => new Date(i.resolvedAt).getTime() - new Date(i.createdAt).getTime()
+      (i) => new Date(i.resolvedAt).getTime() - new Date(i.createdAt).getTime(),
     );
     const avgMttrMin = mttrMs.length
       ? Math.round(mttrMs.reduce((a, b) => a + b, 0) / mttrMs.length / 60000)
       : 0;
 
-    const investigatingList = incidents.filter((i) => i.status === "INVESTIGATING");
+    const investigatingList = incidents.filter(
+      (i) => i.status === "INVESTIGATING",
+    );
     const oldestInv = investigatingList.sort(
-      (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+      (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
     )[0];
 
     const oneDayAgo = Date.now() - 86400000;
     const recentlyActiveMembers = members.filter(
-      (m) => m.lastLogin && new Date(m.lastLogin).getTime() > oneDayAgo
+      (m) => m.lastLogin && new Date(m.lastLogin).getTime() > oneDayAgo,
     ).length;
 
     return {
@@ -133,18 +142,24 @@ const IncidentDashboard = () => {
     return [...incidents]
       .sort(
         (a, b) =>
-          new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt)
+          new Date(b.updatedAt || b.createdAt) -
+          new Date(a.updatedAt || a.createdAt),
       )
       .slice(0, 10);
   }, [incidents]);
 
   const recentIncidentsFeed = useMemo(() => {
     return [...incidents]
-      .sort((a, b) => new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt))
+      .sort(
+        (a, b) =>
+          new Date(b.updatedAt || b.createdAt) -
+          new Date(a.updatedAt || a.createdAt),
+      )
       .slice(0, 6);
   }, [incidents]);
 
-  const companyName = user?.companyId?.name || user?.company?.name || "your workspace";
+  const companyName =
+    user?.companyId?.name || user?.company?.name || "your workspace";
   const displayName = user?.name || "there";
   const cardBaseClass =
     "bg-bg-surface border border-border rounded-lg p-6 flex flex-col gap-3 text-left hover:border-primary/40 hover:bg-primary/5 transition-colors";
@@ -153,13 +168,18 @@ const IncidentDashboard = () => {
     navigate(`${paths.incidents}?status=${encodeURIComponent(status)}`);
   };
 
+  if (isLoading) return <Loader />;
+
   return (
-    <div className="flex-1 overflow-y-auto bg-bg p-8 w-full h-full">
+    <div className="flex-1 overflow-y-auto bg-bg p-4 sm:p-8 w-full min-h-0">
       <div className="flex items-center justify-between mb-5">
         <h1 className="text-5xl font-bold text-primary">Dashboard</h1>
         {isPrivileged && (
           <div className="flex items-center gap-5">
-            <Button variant="secondary" size="md" className="font-bold flex items-center justify-center gap-2">
+            <Button
+              variant="secondary"
+              size="md"
+              className="font-bold flex items-center justify-center gap-2">
               Invite Link Demo
             </Button>
             <Button
@@ -178,17 +198,26 @@ const IncidentDashboard = () => {
       )}
 
       <div className="mb-8">
-        <h2 className="text-4xl font-bold text-text mb-2">Welcome {displayName} 👋</h2>
+        <h2 className="text-4xl font-bold text-text mb-2">
+          Welcome {displayName} 👋
+        </h2>
         <p className="text-text-muted text-md font-medium">
           Here&apos;s what&apos;s happening with {companyName} today
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
-        <button type="button" onClick={() => goToStatusFilter("OPEN")} className={cardBaseClass}>
-          <span className="text-md font-extrabold text-text-muted uppercase">Open</span>
+        <button
+          type="button"
+          onClick={() => goToStatusFilter("OPEN")}
+          className={cardBaseClass}>
+          <span className="text-md font-extrabold text-text-muted uppercase">
+            Open
+          </span>
           <div>
-            <div className="text-5xl font-black text-error mb-3">{isLoading ? "—" : stats.open}</div>
+            <div className="text-5xl font-black text-error mb-3">
+              {isLoading ? "—" : stats.open}
+            </div>
             <div className="flex items-center text-md text-text-muted font-medium gap-1">
               <FiArrowUp className="text-primary" size={20} />
               <span className="text-primary">{stats.openNew24h}</span>
@@ -197,10 +226,17 @@ const IncidentDashboard = () => {
           </div>
         </button>
 
-        <button type="button" onClick={() => goToStatusFilter("INVESTIGATING")} className={cardBaseClass}>
-          <span className="text-md font-extrabold text-text-muted uppercase">Investigating</span>
+        <button
+          type="button"
+          onClick={() => goToStatusFilter("INVESTIGATING")}
+          className={cardBaseClass}>
+          <span className="text-md font-extrabold text-text-muted uppercase">
+            Investigating
+          </span>
           <div>
-            <div className="text-5xl font-black text-ring mb-3">{isLoading ? "—" : stats.investigating}</div>
+            <div className="text-5xl font-black text-ring mb-3">
+              {isLoading ? "—" : stats.investigating}
+            </div>
             <div className="text-md text-text-muted font-medium">
               {stats.oldestInvestigating
                 ? `Oldest active: ${formatRelative(stats.oldestInvestigating.createdAt)}`
@@ -209,23 +245,39 @@ const IncidentDashboard = () => {
           </div>
         </button>
 
-        <button type="button" onClick={() => goToStatusFilter("RESOLVED")} className={cardBaseClass}>
-          <span className="text-md font-extrabold text-text-muted uppercase">Resolved</span>
+        <button
+          type="button"
+          onClick={() => goToStatusFilter("RESOLVED")}
+          className={cardBaseClass}>
+          <span className="text-md font-extrabold text-text-muted uppercase">
+            Resolved
+          </span>
           <div>
-            <div className="text-5xl font-black text-success mb-3">{isLoading ? "—" : stats.resolved}</div>
+            <div className="text-5xl font-black text-success mb-3">
+              {isLoading ? "—" : stats.resolved}
+            </div>
             <div className="flex items-center text-md text-text-muted font-medium gap-1">
               <FiArrowDown className="text-success" size={20} />
               <span>
-                Avg MTTR {stats.avgMttrMin > 0 ? `${stats.avgMttrMin} min` : "—"} (30d resolved)
+                Avg MTTR{" "}
+                {stats.avgMttrMin > 0 ? `${stats.avgMttrMin} min` : "—"} (30d
+                resolved)
               </span>
             </div>
           </div>
         </button>
 
-        <button type="button" onClick={() => navigate(paths.team)} className={cardBaseClass}>
-          <span className="text-md font-extrabold text-text-muted uppercase">Team Members</span>
+        <button
+          type="button"
+          onClick={() => navigate(paths.team)}
+          className={cardBaseClass}>
+          <span className="text-md font-extrabold text-text-muted uppercase">
+            Team Members
+          </span>
           <div>
-            <div className="text-5xl font-black text-primary mb-3">{isLoading ? "—" : stats.memberCount}</div>
+            <div className="text-5xl font-black text-primary mb-3">
+              {isLoading ? "—" : stats.memberCount}
+            </div>
             <div className="text-md text-text-muted font-medium">
               {stats.recentlyActiveMembers} logged in last 24h
             </div>
@@ -246,7 +298,7 @@ const IncidentDashboard = () => {
             </Button>
           </div>
 
-          <div className="p-0">
+          <div className="p-0 overflow-x-auto">
             <div className="grid grid-cols-12 gap-4 px-6 py-4 border-b border-border text-md font-bold text-text-muted uppercase">
               <div className="col-span-6">Incident</div>
               <div className="col-span-2 text-center">Severity</div>
@@ -255,11 +307,10 @@ const IncidentDashboard = () => {
             </div>
 
             <div className="divide-y divide-border">
-              {isLoading && (
-                <div className="px-6 py-8 text-text-muted">Loading incidents…</div>
-              )}
               {!isLoading && tableIncidentsPreview.length === 0 && (
-                <div className="px-6 py-8 text-text-muted">No incidents yet.</div>
+                <div className="px-6 py-8 text-text-muted">
+                  No incidents yet.
+                </div>
               )}
               {!isLoading &&
                 tableIncidentsPreview.map((inc) => (
@@ -268,8 +319,12 @@ const IncidentDashboard = () => {
                     onClick={() => navigate(paths.incidentDetail(inc._id))}
                     className="grid grid-cols-12 gap-4 px-6 py-5 items-center hover:bg-primary/10 cursor-pointer">
                     <div className="col-span-6">
-                      <div className="text-sm text-text-muted font-mono mb-1">{getIncidentDisplayId(inc._id)}</div>
-                      <div className="text-md font-bold text-text">{inc.title}</div>
+                      <div className="text-sm text-text-muted font-mono mb-1">
+                        {getIncidentDisplayId(inc._id)}
+                      </div>
+                      <div className="text-md font-bold text-text">
+                        {inc.title}
+                      </div>
                     </div>
                     <div className="col-span-2 flex justify-center">
                       <span
@@ -310,10 +365,11 @@ const IncidentDashboard = () => {
         <div className="bg-bg-surface border border-border rounded-2xl flex flex-col shadow-sm">
           <div className="p-6 border-b border-border">
             <h3 className="text-xl font-bold text-text">Recent incidents</h3>
-            <p className="text-sm text-text-muted mt-1">Latest updates across your workspace</p>
+            <p className="text-sm text-text-muted mt-1">
+              Latest updates across your workspace
+            </p>
           </div>
           <div className="p-6 flex flex-col gap-6">
-            {isLoading && <div className="text-text-muted">Loading…</div>}
             {!isLoading && recentIncidentsFeed.length === 0 && (
               <div className="text-text-muted">No incidents yet.</div>
             )}
@@ -332,7 +388,10 @@ const IncidentDashboard = () => {
                   <div>
                     <p className="text-lg text-text-muted leading-snug mb-1">
                       <span className="text-text font-bold">{inc.title}</span>
-                      <span className="text-text-muted"> · {formatStatusLabel(inc.status)}</span>
+                      <span className="text-text-muted">
+                        {" "}
+                        · {formatStatusLabel(inc.status)}
+                      </span>
                       <span className="text-text-muted"> · {inc.severity}</span>
                     </p>
                     <span className="text-sm text-text-muted font-medium">

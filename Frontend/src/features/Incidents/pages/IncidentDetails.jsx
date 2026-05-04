@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router";
 import { GoStopwatch } from "react-icons/go";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
+import Loader from "../../../shared/components/Loader";
 import { io } from "socket.io-client";
 import Button from "../../../shared/components/Button";
 import { api } from "../../../api/httpClient";
@@ -32,7 +33,10 @@ const toElapsedTime = (incident, nowTs) => {
   const diffMs = Math.max(0, endTs - startTs);
   const totalSeconds = Math.floor(diffMs / 1000);
   const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
-  const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
+  const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(
+    2,
+    "0",
+  );
   const seconds = String(totalSeconds % 60).padStart(2, "0");
   return `${hours}:${minutes}:${seconds}`;
 };
@@ -125,19 +129,24 @@ const IncidentDetails = () => {
     if (canManageWorkspace(user.role)) return true;
     const uid = String(user._id ?? user.id ?? "");
     const assignedIds = (incident.assignedUsers || []).map((entry) =>
-      typeof entry === "object" && entry?._id != null ? String(entry._id) : String(entry)
+      typeof entry === "object" && entry?._id != null
+        ? String(entry._id)
+        : String(entry),
     );
     return Boolean(uid && assignedIds.includes(uid));
   }, [user, incident]);
 
-  const appendTimelineFromSocket = useCallback((evt) => {
-    const incidentMatch =
-      evt?.incidentId != null &&
-      id != null &&
-      String(evt.incidentId) === String(id);
-    if (!incidentMatch) return;
-    setTimeline((prev) => mergeTimelineEntry(prev, evt));
-  }, [id]);
+  const appendTimelineFromSocket = useCallback(
+    (evt) => {
+      const incidentMatch =
+        evt?.incidentId != null &&
+        id != null &&
+        String(evt.incidentId) === String(id);
+      if (!incidentMatch) return;
+      setTimeline((prev) => mergeTimelineEntry(prev, evt));
+    },
+    [id],
+  );
 
   useEffect(() => {
     if (!id) return;
@@ -160,7 +169,10 @@ const IncidentDetails = () => {
   const responderList = useMemo(() => {
     if (!incident) return [];
     const map = new Map();
-    const users = [...(incident.assignedUsers || []), incident.createdBy].filter(Boolean);
+    const users = [
+      ...(incident.assignedUsers || []),
+      incident.createdBy,
+    ].filter(Boolean);
     users.forEach((u) => {
       if (u?._id && !map.has(u._id)) {
         map.set(u._id, u);
@@ -249,11 +261,7 @@ const IncidentDetails = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex-1 overflow-y-auto bg-bg p-8 w-full h-full text-text-muted text-lg">
-        Loading incident details...
-      </div>
-    );
+    return <Loader />;
   }
 
   if (errorMessage || !incident) {
@@ -261,11 +269,12 @@ const IncidentDetails = () => {
       <div className="flex-1 overflow-y-auto bg-bg p-8 w-full h-full">
         <Link
           to={paths.incidents}
-          className="px-3 py-1.5 rounded-lg border border-border text-sm font-bold text-text-muted hover:text-text hover:bg-bg-surface transition-colors inline-flex items-center gap-2 mb-6"
-        >
+          className="px-3 py-1.5 rounded-lg border border-border text-sm font-bold text-text-muted hover:text-text hover:bg-bg-surface transition-colors inline-flex items-center gap-2 mb-6">
           ← Back
         </Link>
-        <p className="text-error text-lg">{errorMessage || "Incident not found."}</p>
+        <p className="text-error text-lg">
+          {errorMessage || "Incident not found."}
+        </p>
       </div>
     );
   }
@@ -279,37 +288,36 @@ const IncidentDetails = () => {
           className="px-3 py-1.5 rounded-lg border border-border text-sm font-bold text-text-muted hover:text-text hover:bg-bg-surface transition-colors flex items-center gap-2">
           ← Back
         </Link>
-        <span className="text-lg font-bold text-text-muted">
-          {id}
-        </span>
+        <span className="text-lg font-bold text-text-muted">{id}</span>
       </div>
 
       {/* Header Info */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-text mb-4">
-          {incident.title}
-        </h1>
+        <h1 className="text-3xl font-bold text-text mb-4">{incident.title}</h1>
         <div className="flex items-center gap-3">
-          <span className={`px-4 py-2 rounded-lg border text-sm font-bold ${
-            incident.severity === "P1"
-              ? "border-error/30 bg-error/5 text-error"
-              : incident.severity === "P2"
-                ? "border-ring/30 bg-ring/5 text-ring"
-                : "border-success/30 bg-success/5 text-success"
-          }`}>
+          <span
+            className={`px-4 py-2 rounded-lg border text-sm font-bold ${
+              incident.severity === "P1"
+                ? "border-error/30 bg-error/5 text-error"
+                : incident.severity === "P2"
+                  ? "border-ring/30 bg-ring/5 text-ring"
+                  : "border-success/30 bg-success/5 text-success"
+            }`}>
             {incident.severity}
           </span>
-          <span className={`px-3 py-1 rounded-lg text-md font-bold flex items-center gap-1.5 ${
-            incident.status === "INVESTIGATING"
-              ? "bg-ring/10 text-ring"
-              : incident.status === "OPEN"
-                ? "bg-error/10 text-error"
-                : "bg-success/10 text-success"
-          }`}>
+          <span
+            className={`px-3 py-1 rounded-lg text-md font-bold flex items-center gap-1.5 ${
+              incident.status === "INVESTIGATING"
+                ? "bg-ring/10 text-ring"
+                : incident.status === "OPEN"
+                  ? "bg-error/10 text-error"
+                  : "bg-success/10 text-success"
+            }`}>
             {formatStatusLabel(incident.status)}
           </span>
           <span className="text-lg text-text-muted font-mono flex items-center gap-2">
-            <GoStopwatch className="inline-block" size={20} /> {toElapsedTime(incident, nowTs)} elapsed
+            <GoStopwatch className="inline-block" size={20} />{" "}
+            {toElapsedTime(incident, nowTs)} elapsed
           </span>
 
           {isPrivileged && (
@@ -317,8 +325,7 @@ const IncidentDetails = () => {
               value={incident.status}
               onChange={(e) => handleStatusUpdate(e.target.value)}
               disabled={isUpdatingStatus}
-              className="bg-bg-surface border border-border rounded-lg px-3 py-1.5 text-sm font-bold text-text focus:outline-none focus:border-primary transition-colors appearance-none ml-2"
-            >
+              className="bg-bg-surface border border-border rounded-lg px-3 py-1.5 text-sm font-bold text-text focus:outline-none focus:border-primary transition-colors appearance-none ml-2">
               <option value="INVESTIGATING">Investigating</option>
               <option value="OPEN">Open</option>
               <option value="RESOLVED">Resolved</option>
@@ -353,9 +360,13 @@ const IncidentDetails = () => {
                   </div>
                   <div className="bg-bg-surface border border-border rounded-lg p-5 shadow-sm">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-lg font-bold text-text">{name}</span>
+                      <span className="text-lg font-bold text-text">
+                        {name}
+                      </span>
                     </div>
-                    <p className="text-md text-text-muted mb-2">{entry.message}</p>
+                    <p className="text-md text-text-muted mb-2">
+                      {entry.message}
+                    </p>
                     <span className="text-sm text-text-muted/70 font-mono">
                       {formatDateTime(entry.createdAt)}
                     </span>
@@ -365,7 +376,9 @@ const IncidentDetails = () => {
             })}
 
             {timeline.length === 0 && (
-              <div className="text-text-muted text-md pl-1">No timeline updates yet.</div>
+              <div className="text-text-muted text-md pl-1">
+                No timeline updates yet.
+              </div>
             )}
           </div>
 
@@ -373,7 +386,8 @@ const IncidentDetails = () => {
           <div className="relative">
             {!canPostTimeline && (
               <p className="text-sm text-text-muted mb-2">
-                Only admins or responders assigned to this incident can post timeline updates.
+                Only admins or responders assigned to this incident can post
+                timeline updates.
               </p>
             )}
             <input
@@ -393,8 +407,7 @@ const IncidentDetails = () => {
               isLoading={isPostingTimeline}
               onClick={handlePostTimeline}
               disabled={!canPostTimeline}
-              className="absolute right-2 top-2 bottom-2 px-6 rounded-md text-md"
-            >
+              className="absolute right-2 top-2 bottom-2 px-6 rounded-md text-md">
               Post
             </Button>
           </div>
@@ -425,10 +438,14 @@ const IncidentDetails = () => {
                 Action Items
               </h4>
               <ol className="text-md text-text leading-relaxed list-decimal pl-4 mb-5">
-                {normalizeActionItems(postmortem?.actionItems).map((item, index) => (
+                {normalizeActionItems(postmortem?.actionItems).map(
+                  (item, index) => (
                     <li key={`${item}-${index}`}>{item}</li>
-                  ))}
-                {!normalizeActionItems(postmortem?.actionItems).length && <li>Generate postmortem to see action items.</li>}
+                  ),
+                )}
+                {!normalizeActionItems(postmortem?.actionItems).length && (
+                  <li>Generate postmortem to see action items.</li>
+                )}
               </ol>
               {isPrivileged && (
                 <Button
@@ -436,8 +453,7 @@ const IncidentDetails = () => {
                   size="full"
                   isLoading={isGeneratingPostmortem}
                   onClick={handleGeneratePostmortem}
-                  className="border border-error/20 text-error hover:bg-error bg-error/10 hover:text-text text-lg cursor-pointer font-bold flex items-center justify-center gap-2"
-                >
+                  className="border border-error/20 text-error hover:bg-error bg-error/10 hover:text-text text-lg cursor-pointer font-bold flex items-center justify-center gap-2">
                   Regenerate Postmortem
                 </Button>
               )}
@@ -451,18 +467,26 @@ const IncidentDetails = () => {
             </h3>
             <div className="flex flex-col gap-2 mb-4">
               {responderList.map((user) => (
-                <div key={user._id} className="bg-bg-surface border border-border rounded-lg p-3 flex items-center gap-3 shadow-sm">
+                <div
+                  key={user._id}
+                  className="bg-bg-surface border border-border rounded-lg p-3 flex items-center gap-3 shadow-sm">
                   <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-md">
                     {(user?.name || "U").charAt(0).toUpperCase()}
                   </div>
                   <div>
-                    <div className="text-md font-bold text-text">{user?.name || "Unknown"}</div>
-                    <div className="text-sm font-semibold text-text-muted">{user?.email}</div>
+                    <div className="text-md font-bold text-text">
+                      {user?.name || "Unknown"}
+                    </div>
+                    <div className="text-sm font-semibold text-text-muted">
+                      {user?.email}
+                    </div>
                   </div>
                 </div>
               ))}
               {responderList.length === 0 && (
-                <div className="text-text-muted text-sm">No responders assigned.</div>
+                <div className="text-text-muted text-sm">
+                  No responders assigned.
+                </div>
               )}
             </div>
             {isPrivileged && (
@@ -471,9 +495,10 @@ const IncidentDetails = () => {
                   value={selectedResponderId}
                   onChange={(e) => setSelectedResponderId(e.target.value)}
                   disabled={isAssigningResponder}
-                  className="w-full bg-input border border-border rounded-lg px-4 py-4 text-md text-text focus:outline-none focus:border-primary transition-colors shadow-sm"
-                >
-                  <option value="">Assign responder from company members...</option>
+                  className="w-full bg-input border border-border rounded-lg px-4 py-4 text-md text-text focus:outline-none focus:border-primary transition-colors shadow-sm">
+                  <option value="">
+                    Assign responder from company members...
+                  </option>
                   {companyMembers.map((member) => (
                     <option key={member._id} value={member._id}>
                       {member.name} ({member.role}) - {member.email}
@@ -485,8 +510,7 @@ const IncidentDetails = () => {
                   isLoading={isAssigningResponder}
                   onClick={handleAssignResponder}
                   disabled={!selectedResponderId}
-                  className="px-4 whitespace-nowrap"
-                >
+                  className="px-4 whitespace-nowrap">
                   Assign
                 </Button>
               </div>
@@ -501,11 +525,15 @@ const IncidentDetails = () => {
             <div className="flex flex-col gap-2 text-lg">
               <div className="flex justify-between">
                 <span className="text-text-muted">Created by</span>
-                <span className="text-text font-medium">{incident?.createdBy?.name || "--"}</span>
+                <span className="text-text font-medium">
+                  {incident?.createdBy?.name || "--"}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-text-muted">Created at</span>
-                <span className="text-text font-medium">{formatDateTime(incident.createdAt)}</span>
+                <span className="text-text font-medium">
+                  {formatDateTime(incident.createdAt)}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-text-muted">Timeline events</span>
@@ -513,15 +541,16 @@ const IncidentDetails = () => {
               </div>
               <div className="flex justify-between mb-4">
                 <span className="text-text-muted">Company</span>
-                <span className="text-text font-medium">{incident.companyId || "--"}</span>
+                <span className="text-text font-medium">
+                  {incident.companyId || "--"}
+                </span>
               </div>
               {isPrivileged && (
                 <Button
                   size="full"
                   isLoading={isUpdatingStatus}
                   onClick={() => handleStatusUpdate("RESOLVED")}
-                  className="font-bold rounded-lg flex items-center justify-center text-lg"
-                >
+                  className="font-bold rounded-lg flex items-center justify-center text-lg">
                   ✓ Mark as Resolved
                 </Button>
               )}
