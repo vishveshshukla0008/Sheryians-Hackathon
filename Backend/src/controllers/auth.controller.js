@@ -132,7 +132,7 @@ export const login = async (req, res, next) => {
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -198,7 +198,11 @@ export const getMe = async (req, res, next) => {
 
 export const logout = async (req, res, next) => {
   try {
-    res.clearCookie("token");
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    });
     return res.status(200).json({
       success: true,
       message: "Logged out successfully",
@@ -241,10 +245,10 @@ export const verifyEmail = async (req, res, next) => {
 
     const isProd = process.env.NODE_ENV === "production";
     const cookieMaxAgeMs = 7 * 24 * 60 * 60 * 1000;
-    res.cookie("accessToken", jwtToken, {
+    res.cookie("token", jwtToken, {
       httpOnly: true,
-      secure: isProd,
-      sameSite: isProd ? "none" : "lax",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: cookieMaxAgeMs,
       path: "/",
     });
