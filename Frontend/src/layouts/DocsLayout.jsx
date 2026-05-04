@@ -1,4 +1,5 @@
 import { Outlet, NavLink } from "react-router";
+import PageBackButton from "../shared/components/PageBackButton";
 import {
   FiBook,
   FiZap,
@@ -250,6 +251,9 @@ const DocsLayout = () => {
           scrollbarWidth: "none", // Firefox
           msOverflowStyle: "none", // IE/Edge
         }}>
+        <div className="mb-6">
+          <PageBackButton fallbackPath="/" />
+        </div>
         <Outlet />
       </main>
     </div>
