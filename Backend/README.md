@@ -52,6 +52,8 @@ Copy `.env.example` to `.env` and fill values.
 | `BREVO_SMTP_HOST`                    | Optional SMTP host (default `smtp-relay.brevo.com`)                                       |
 | `BREVO_SMTP_PORT`                    | Optional SMTP port (default `587`; use `465` for SSL)                                     |
 | `BREVO_SMTP_SECURE`                  | Optional `true/false` SSL toggle (auto true on port `465`)                                |
+| `EMAIL_PROVIDER`                     | `smtp` (default) or `brevo_api`                                                            |
+| `BREVO_API_KEY`                      | Required when `EMAIL_PROVIDER=brevo_api`                                                   |
 | `MAIL_FROM`                          | From address for transactional mail                                                       |
 | `FRONTEND_URL`                       | Allowed CORS origin + invite / incident links                                             |
 | `MISTRAL_API_KEY`                    | Required for AI postmortem generation                                                     |
