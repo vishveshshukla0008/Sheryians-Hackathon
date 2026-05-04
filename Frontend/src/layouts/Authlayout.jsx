@@ -2,6 +2,7 @@ import { Outlet } from "react-router";
 import { Toaster } from "react-hot-toast";
 import { SiOpslevel } from "react-icons/si";
 import { useTheme } from "../features/Theme/hooks/useTheme";
+import PageBackButton from "../shared/components/PageBackButton";
 
 const Authlayout = () => {
   const { theme } = useTheme();
@@ -22,6 +23,7 @@ const Authlayout = () => {
       <header className="w-full border-b border-border/70 bg-bg backdrop-blur-md py-4 px-4 sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
+            <PageBackButton fallbackPath="/" className="-ml-1 shrink-0" />
             <div className="p-2 rounded-lg text-text shadow-sm">
               <SiOpslevel className="text-2xl" />
             </div>
@@ -34,7 +36,6 @@ const Authlayout = () => {
               </h1>
             </div>
           </div>
-
           <div className="rounded-3xl bg-bg-surface border border-border px-4 py-3 shadow-sm">
             <p className="text-sm text-text-muted sm:text-base">
               Welcome ! your security and speed are our top priority.

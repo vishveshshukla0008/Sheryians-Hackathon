@@ -1,11 +1,14 @@
-import { Outlet } from "react-router";
+import { Outlet, useLocation } from "react-router";
 import { Toaster } from "react-hot-toast";
 import Navbar from "../shared/components/Navbar";
 import Footer from "../shared/components/Footer";
 import { useTheme } from "../features/Theme/hooks/useTheme";
+import PageBackButton from "../shared/components/PageBackButton";
 
 const RootLayout = () => {
   const { theme } = useTheme();
+  const location = useLocation();
+  const showBackBar = location.pathname !== "/" && !location.pathname.startsWith("/docs");
 
   return (
     <div className="bg-bg text-text min-h-screen">
@@ -21,6 +24,11 @@ const RootLayout = () => {
       />
       <Navbar />
       <main className="relative z-10">
+        {showBackBar && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+            <PageBackButton fallbackPath="/" />
+          </div>
+        )}
         <Outlet />
       </main>
       <Footer />

@@ -18,7 +18,7 @@ export const initSocket = (httpServer) => {
     try {
       const headerCookie = socket.handshake.headers?.cookie;
       const parsed = headerCookie ? cookie.parse(headerCookie) : {};
-      const cookieToken = parsed?.accessToken;
+      const cookieToken = parsed?.token || parsed?.accessToken;
 
       const token = cookieToken || socket.handshake.auth?.token;
 
