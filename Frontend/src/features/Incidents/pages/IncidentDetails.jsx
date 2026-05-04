@@ -289,7 +289,7 @@ const IncidentDetails = () => {
             Live Timeline
           </h3>
 
-          <div className="flex flex-col gap-6 relative before:absolute before:inset-y-0 before:left-4 before:w-[2px] before:bg-border mb-8">
+          <div className="flex flex-col gap-6 relative before:absolute before:inset-y-0 before:left-4 before:w-0.5before:bg-border mb-8">
             {timeline.map((entry) => {
               const name = entry?.postedBy?.name || "Unknown";
               const initials = name.charAt(0).toUpperCase();

@@ -112,7 +112,7 @@ const IncidentStatusPage = () => {
 
   return (
     <div className="flex-1 flex flex-col h-full bg-bg overflow-y-auto">
-      <div className="h-[80px] border-b border-border flex items-center justify-between px-8 shrink-0 bg-bg">
+      <div className="h-20 border-b border-border flex items-center justify-between px-8 shrink-0 bg-bg">
         <h1 className="text-xl font-bold text-text">Status Page</h1>
         {isPrivileged && (
           <div className="flex items-center gap-4">
@@ -164,7 +164,7 @@ const IncidentStatusPage = () => {
                     {inc.severity}
                   </span>
                   <div className="min-w-0">
-                    <h4 className="text-text font-bold text-lg mb-1 break-words">{inc.title}</h4>
+                    <h4 className="text-text font-bold text-lg mb-1 wrap-break-word">{inc.title}</h4>
                     <p className="text-text-muted text-md font-medium line-clamp-2">
                       {inc.description || "No description provided."}
                     </p>
