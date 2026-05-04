@@ -1,56 +1,90 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { useSelector } from "react-redux";
 import DeclareIncidentModal from "../components/DeclareIncidentModal";
 import Button from "../../../shared/components/Button";
+import { api } from "../../../api/httpClient";
+import { useWorkspacePaths } from "../hooks/useWorkspacePaths";
+import { canManageWorkspace } from "../../../lib/workspacePaths";
 
-const incidents = [
-  {
-    id: "INC-29402",
-    title: "API Gateway Timeout Escalation",
-    severity: "P1",
-    timeElapsed: "00:42:15",
-    status: "Investigating",
-  },
-  {
-    id: "INC-29403",
-    title: "Stripe Webhook Processing Latency",
-    severity: "P2",
-    timeElapsed: "01:12:04",
-    status: "Open",
-  },
-  {
-    id: "INC-29405",
-    title: "Auth Service Memory Leak - Cluster B",
-    severity: "P3",
-    timeElapsed: "02:55:30",
-    status: "Open",
-  },
-  {
-    id: "INC-29401",
-    title: "CDN Cache Invalidation Failure",
-    severity: "P2",
-    timeElapsed: "--",
-    status: "Resolved",
-  },
-];
+const formatStatusLabel = (status = "") => {
+  if (status === "OPEN") return "Open";
+  if (status === "INVESTIGATING") return "Investigating";
+  if (status === "RESOLVED") return "Resolved";
+  return status;
+};
+
+const getIncidentDisplayId = (id = "") => `INC-${id.slice(-5).toUpperCase()}`;
+
+const toElapsedTime = (incident, nowTs) => {
+  if (!incident?.createdAt) return "--";
+
+  const startTs = new Date(incident.createdAt).getTime();
+  const endTs =
+    incident.status === "RESOLVED" && incident.resolvedAt
+      ? new Date(incident.resolvedAt).getTime()
+      : nowTs;
+
+  const diffMs = Math.max(0, endTs - startTs);
+  const totalSeconds = Math.floor(diffMs / 1000);
+  const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
+  const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
+  const seconds = String(totalSeconds % 60).padStart(2, "0");
+
+  return `${hours}:${minutes}:${seconds}`;
+};
 
 const IncidentAdmin = () => {
   const navigate = useNavigate();
+  const paths = useWorkspacePaths();
+  const user = useSelector((state) => state.auth.user);
+  const isPrivileged = canManageWorkspace(user?.role);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [incidents, setIncidents] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [nowTs, setNowTs] = useState(Date.now());
+
+  const fetchIncidents = async () => {
+    try {
+      setIsLoading(true);
+      setErrorMessage("");
+      const response = await api.get("/incidents");
+      setIncidents(response?.data?.incidents || []);
+    } catch (error) {
+      setErrorMessage(error?.message || "Failed to fetch incidents.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setNowTs(Date.now());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    fetchIncidents();
+  }, []);
 
   return (
     <div className="flex-1 overflow-y-auto bg-bg p-8 w-full h-full">
       {/* Header Area */}
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-4xl font-bold text-text">Active Incidents</h1>
-        <div className="flex items-center gap-5">
-          <Button variant="secondary" size="md" className="font-bold flex items-center justify-center gap-2">
-            Invite Link Demo
-          </Button>
-          <Button onClick={() => setIsModalOpen(true)} variant="primary" size="md" className="font-bold">
-            + Create Incident
-          </Button>
-        </div>
+        {isPrivileged && (
+          <div className="flex items-center gap-5">
+            <Button variant="secondary" size="md" className="font-bold flex items-center justify-center gap-2">
+              Invite Link Demo
+            </Button>
+            <Button onClick={() => setIsModalOpen(true)} variant="primary" size="md" className="font-bold">
+              + Create Incident
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Main Content Area */}
@@ -84,29 +118,44 @@ const IncidentAdmin = () => {
           </div>
 
           {/* Table Rows */}
-          <div className="divide-y divide-border">
-            {incidents.map((inc) => (
+          {isLoading && (
+            <div className="px-6 py-8 text-text-muted text-lg">Loading incidents...</div>
+          )}
+
+          {!isLoading && errorMessage && (
+            <div className="px-6 py-8 text-error text-lg">{errorMessage}</div>
+          )}
+
+          {!isLoading && !errorMessage && incidents.length === 0 && (
+            <div className="px-6 py-8 text-text-muted text-lg">
+              No active incidents found.
+            </div>
+          )}
+
+          {!isLoading && !errorMessage && incidents.length > 0 && (
+            <div className="divide-y divide-border">
+              {incidents.map((inc) => (
               <div
-                key={inc.id}
-                onClick={() => navigate(`/admin/incidents/${inc.id}`)}
+                key={inc._id}
+                onClick={() => navigate(paths.incidentDetail(inc._id))}
                 className="grid grid-cols-12 gap-4 px-6 py-5 items-center hover:bg-primary/5 cursor-pointer transition-colors"
               >
                 <div className="col-span-2 flex items-center">
                   <span
                     className={`px-3 py-1 rounded-lg text-sm font-bold flex items-center gap-2 ${
-                      inc.status === "Investigating"
+                      inc.status === "INVESTIGATING"
                         ? "bg-ring/10 text-ring"
-                        : inc.status === "Open"
+                        : inc.status === "OPEN"
                           ? "bg-error/10 text-error animate-pulse"
                           : "bg-success/10 text-success"
                     }`}>
-                    {inc.status}
+                    {formatStatusLabel(inc.status)}
                   </span>
                 </div>
 
                 <div className="col-span-6">
                   <div className="text-md text-text-muted font-mono mb-1">
-                    {inc.id}
+                    {getIncidentDisplayId(inc._id)}
                   </div>
                   <div className="text-lg font-bold text-text">{inc.title}</div>
                 </div>
@@ -125,14 +174,21 @@ const IncidentAdmin = () => {
                 </div>
 
                 <div className="col-span-2 text-right text-lg text-text-muted font-mono">
-                  {inc.timeElapsed}
+                  {toElapsedTime(inc, nowTs)}
                 </div>
               </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
-      <DeclareIncidentModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      {isPrivileged && (
+        <DeclareIncidentModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onIncidentCreated={fetchIncidents}
+        />
+      )}
     </div>
   );
 };

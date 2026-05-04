@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes, Navigate } from "react-router";
 import RootLayout from "../layouts/RootLayout";
 import Authlayout from "../layouts/Authlayout";
 import IncidentLayout from "../layouts/IncidentLayout";
+import RequireWorkspaceAccess from "../layouts/RequireWorkspaceAccess";
 import LoginPage from "../features/Authentication/pages/LoginPage";
 import SignupPage from "../features/Authentication/pages/SignupPage";
 import ForgetPassword from "../features/Authentication/pages/ForgetPassword";
@@ -38,6 +39,7 @@ import Authentication from "../pages/Docs/developer/Authentication";
 import ErrorCodes from "../pages/Docs/developer/ErrorCodes";
 import RateLimits from "../pages/Docs/developer/RateLimits";
 import VerifyEmailPage from "../features/Authentication/pages/VerifyEmailPage";
+import AcceptInvitePage from "../features/Authentication/pages/AcceptInvitePage";
 
 const AppRoutes = () => {
   return (
@@ -73,20 +75,37 @@ const AppRoutes = () => {
         {/* Auth Routes with AUTHLAYOUT */}
         <Route element={<Authlayout />}>
           <Route path="login" element={<LoginPage />} />
+          <Route path="accept-invite" element={<AcceptInvitePage />} />
           <Route path="signup" element={<SignupPage />} />
           <Route path="forget-password" element={<ForgetPassword />} />
           <Route path="reset-password" element={<ResetPassword />} />
           <Route path="verify-email" element={<VerifyEmailPage />} />
         </Route>
 
-        {/* ADMIN */}
-        <Route path="/admin" element={<IncidentLayout />}>
-          <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard" element={<IncidentDashboard />} />
-          <Route path="incidents" element={<IncidentAdmin />} />
-          <Route path="incidents/:id" element={<IncidentDetails />} />
-          <Route path="status" element={<IncidentStatusPage />} />
-          <Route path="team" element={<TeamManagement />} />
+        {/* Workspace: ADMIN/CEO under /admin/*; DEVELOPER/MEMBER under /dashboard, /incidents, … */}
+        <Route element={<RequireWorkspaceAccess />}>
+          <Route path="/admin" element={<IncidentLayout />}>
+            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route path="dashboard" element={<IncidentDashboard />} />
+            <Route path="incidents" element={<IncidentAdmin />} />
+            <Route path="incidents/:id" element={<IncidentDetails />} />
+            <Route path="status" element={<IncidentStatusPage />} />
+            <Route path="team" element={<TeamManagement />} />
+          </Route>
+
+          <Route path="/dashboard" element={<IncidentLayout />}>
+            <Route index element={<IncidentDashboard />} />
+          </Route>
+          <Route path="/incidents" element={<IncidentLayout />}>
+            <Route index element={<IncidentAdmin />} />
+            <Route path=":id" element={<IncidentDetails />} />
+          </Route>
+          <Route path="/team" element={<IncidentLayout />}>
+            <Route index element={<TeamManagement />} />
+          </Route>
+          <Route path="/status" element={<IncidentLayout />}>
+            <Route index element={<IncidentStatusPage />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

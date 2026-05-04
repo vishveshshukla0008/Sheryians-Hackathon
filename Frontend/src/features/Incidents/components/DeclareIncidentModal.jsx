@@ -1,20 +1,46 @@
 import React from "react";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import Button from "../../../shared/components/Button";
 import Input from "../../../shared/components/Input";
+import { api } from "../../../api/httpClient";
 
-const DeclareIncidentModal = ({ isOpen, onClose }) => {
+const DeclareIncidentModal = ({ isOpen, onClose, onIncidentCreated }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm();
+    setError,
+    clearErrors,
+  } = useForm({
+    defaultValues: {
+      title: "",
+      description: "",
+      severity: "P1",
+    },
+  });
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-  const onSubmit = (data) => {
-    console.log("Declared Incident Data:", data);
-    reset(); // Clear the form after submission
-    onClose();
+  const onSubmit = async (data) => {
+    try {
+      setIsSubmitting(true);
+      clearErrors("root.serverError");
+      await api.post("/incidents", data);
+      toast.success("Incident created successfully");
+      reset();
+      onClose();
+      if (onIncidentCreated) {
+        onIncidentCreated();
+      }
+    } catch (error) {
+      setError("root.serverError", {
+        type: "server",
+        message: error?.message || "Failed to create incident.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -78,12 +104,16 @@ const DeclareIncidentModal = ({ isOpen, onClose }) => {
               </label>
               <select
                 className="w-full bg-input border border-border/60 rounded-2xl px-5 py-4 text-text focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary focus:ring-offset-2 focus:ring-offset-bg-surface transition-all duration-300 hover:border-primary/40 appearance-none"
-                {...register("severity")}>
+                {...register("severity", { required: true })}>
                 <option value="P1">P1 — Critical (everything down)</option>
                 <option value="P2">P2 — High (partial outage)</option>
                 <option value="P3">P3 — Medium (minor issue)</option>
               </select>
             </div>
+
+            {errors.root?.serverError && (
+              <p className="text-error text-sm font-medium">{errors.root.serverError.message}</p>
+            )}
           </div>
 
           {/* Footer */}
@@ -91,6 +121,8 @@ const DeclareIncidentModal = ({ isOpen, onClose }) => {
             <Button
               type="submit"
               size="full"
+              isLoading={isSubmitting}
+              disabled={isSubmitting}
               className="font-bold flex items-center justify-center gap-2">
               🚨 Declare Incident
             </Button>
