@@ -1,4 +1,4 @@
-import transporter from "../config/mail.js";
+import { sendMail } from "../config/mail.js";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -98,15 +98,6 @@ const btn = (text, href) => `
   </table>`;
 
 // ─── SEND HELPER ──────────────────────────────────────────────
-const sendMail = async ({ to, subject, html }) => {
-  await transporter.sendMail({
-    from: process.env.MAIL_FROM,
-    to,
-    subject,
-    html,
-  });
-};
-
 // ─────────────────────────────────────────────────────────────
 // 1. INVITE EMAIL
 // ─────────────────────────────────────────────────────────────
