@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link } from "react-router";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import {
   FiTrendingDown,
   FiUsers,
@@ -27,6 +27,16 @@ import { cn } from "../lib/utils/cn.js";
 
 const HomePage = () => {
   const [focusedProblemCard, setFocusedProblemCard] = useState(null);
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const inviteToken = searchParams.get("token")?.trim();
+    if (inviteToken) {
+      navigate(`/accept-invite?token=${encodeURIComponent(inviteToken)}`, { replace: true });
+    }
+  }, [searchParams, navigate]);
+
   const newLocal = "Teams investigate issues through a centralized live timeline while AI analyzes logs, identifies patterns, and suggests probable root causes.";
   return (
     <div className="min-h-screen bg-bg">

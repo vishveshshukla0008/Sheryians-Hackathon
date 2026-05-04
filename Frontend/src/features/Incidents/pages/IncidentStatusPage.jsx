@@ -1,89 +1,207 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useSelector } from "react-redux";
 import Button from "../../../shared/components/Button";
 import DeclareIncidentModal from "../components/DeclareIncidentModal";
 import { FiLink2 } from "react-icons/fi";
+import { canManageWorkspace } from "../../../lib/workspacePaths";
+import { api } from "../../../api/httpClient";
 
-const services = [
-  { name: "Order Service", status: "Operational", statusColor: "success" },
-  { name: "Payment Gateway", status: "Degraded Performance", statusColor: "ring" },
-  { name: "Auth Service", status: "Operational", statusColor: "success" },
-  { name: "Delivery API", status: "Operational", statusColor: "success" },
-  { name: "Notification Service", status: "Outage", statusColor: "error" },
-  { name: "Analytics", status: "Operational", statusColor: "success" },
-];
+const formatStatusLabel = (status = "") => {
+  if (status === "OPEN") return "Open";
+  if (status === "INVESTIGATING") return "Investigating";
+  if (status === "RESOLVED") return "Resolved";
+  return status;
+};
+
+const formatRelative = (iso) => {
+  if (!iso) return "";
+  const diffSec = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  if (diffSec < 60) return `${Math.max(0, diffSec)}s ago`;
+  const m = Math.floor(diffSec / 60);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
+};
 
 const IncidentStatusPage = () => {
+  const user = useSelector((state) => state.auth.user);
+  const isPrivileged = canManageWorkspace(user?.role);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [incidents, setIncidents] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const companyName = user?.companyId?.name || user?.company?.name || "Your workspace";
+
+  const fetchIncidents = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setErrorMessage("");
+      const res = await api.get("/incidents");
+      setIncidents(res?.data?.incidents || []);
+    } catch (error) {
+      setErrorMessage(error?.message || "Failed to load status.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchIncidents();
+  }, [fetchIncidents]);
+
+  const activeIncidents = useMemo(
+    () => incidents.filter((i) => i.status !== "RESOLVED"),
+    [incidents]
+  );
+
+  const sortedActive = useMemo(() => {
+    const order = { P1: 1, P2: 2, P3: 3 };
+    return [...activeIncidents].sort((a, b) => {
+      const s = (order[a.severity] || 9) - (order[b.severity] || 9);
+      if (s !== 0) return s;
+      return new Date(a.createdAt) - new Date(b.createdAt);
+    });
+  }, [activeIncidents]);
+
+  const systemBanner = useMemo(() => {
+    if (activeIncidents.length === 0) {
+      return {
+        text: "All systems operational",
+        bg: "bg-success/10",
+        border: "border-success/20",
+        fg: "text-success",
+      };
+    }
+    if (activeIncidents.some((i) => i.severity === "P1")) {
+      return {
+        text: "Critical — P1 incident in progress",
+        bg: "bg-error/10",
+        border: "border-error/20",
+        fg: "text-error",
+      };
+    }
+    if (activeIncidents.some((i) => i.status === "OPEN")) {
+      return {
+        text: "Service disruption — open incidents",
+        bg: "bg-error/10",
+        border: "border-error/20",
+        fg: "text-error",
+      };
+    }
+    return {
+      text: "Investigating — no open tickets",
+      bg: "bg-ring/10",
+      border: "border-ring/20",
+      fg: "text-ring",
+    };
+  }, [activeIncidents]);
+
+  const severityBadgeClass = (sev) => {
+    if (sev === "P1") return "border-error/30 bg-error/5 text-error";
+    if (sev === "P2") return "border-ring/30 bg-ring/5 text-ring";
+    return "border-success/30 bg-success/5 text-success";
+  };
+
+  const statusTextClass = (inc) => {
+    if (inc.status === "RESOLVED") return "text-success";
+    if (inc.status === "INVESTIGATING") return "text-ring";
+    return "text-error";
+  };
 
   return (
     <div className="flex-1 flex flex-col h-full bg-bg overflow-y-auto">
-      {/* Top Header */}
       <div className="h-[80px] border-b border-border flex items-center justify-between px-8 shrink-0 bg-bg">
         <h1 className="text-xl font-bold text-text">Status Page</h1>
-        <div className="flex items-center gap-4">
-          <Button variant="secondary" size="sm" className="font-bold flex items-center gap-2">
-            <FiLink2 /> Invite Link Demo
-          </Button>
-          <Button onClick={() => setIsModalOpen(true)} variant="primary" size="sm" className="font-bold">
-            + Create Incident
-          </Button>
-        </div>
+        {isPrivileged && (
+          <div className="flex items-center gap-4">
+            <Button variant="secondary" size="sm" className="font-bold flex items-center gap-2">
+              <FiLink2 /> Invite Link Demo
+            </Button>
+            <Button onClick={() => setIsModalOpen(true)} variant="primary" size="sm" className="font-bold">
+              + Create Incident
+            </Button>
+          </div>
+        )}
       </div>
 
-      {/* Main Content */}
       <div className="flex-1 flex flex-col items-center py-12 px-4">
-        {/* Status Badge */}
-        <div className="bg-success/10 border border-success/20 rounded-full px-4 py-1.5 flex items-center gap-2 mb-6">
-          <span className="text-success font-bold text-xl">All Systems Operational</span>
+        {errorMessage && (
+          <p className="text-error text-sm font-medium mb-4 max-w-3xl w-full text-center">{errorMessage}</p>
+        )}
+
+        <div
+          className={`${systemBanner.bg} ${systemBanner.border} border rounded-full px-4 py-1.5 flex items-center gap-2 mb-6`}
+        >
+          <span className={`${systemBanner.fg} font-bold text-xl`}>{systemBanner.text}</span>
         </div>
 
-        {/* Titles */}
-        <h1 className="text-4xl font-bold text-text mb-2 text-center">
-          Swiggy Engineering Status
-        </h1>
-        <p className="text-text-muted text-xl mb-12 text-center">
-          Real-time status for all Swiggy services
+        <h1 className="text-4xl font-bold text-text mb-2 text-center">{companyName}</h1>
+        <p className="text-text-muted text-xl mb-12 text-center max-w-2xl">
+          Live incident status for your organization. Open and investigating items are shown below.
         </p>
 
-        {/* Services List */}
         <div className="w-full max-w-3xl flex flex-col gap-3 mb-12">
-          {services.map((service, index) => (
-            <div
-              key={index}
-              className="bg-bg-surface border border-border rounded-lg p-5 flex items-center justify-between shadow-sm"
-            >
-              <div className="flex items-center gap-3">
-                <span className="text-text font-bold text-xl">{service.name}</span>
-              </div>
-              <div className={`flex items-center gap-2 text-${service.statusColor}`}>
-                <span className="text-lg font-bold">{service.status}</span>
-              </div>
+          {isLoading && (
+            <div className="text-center text-text-muted py-8">Loading status…</div>
+          )}
+          {!isLoading && sortedActive.length === 0 && (
+            <div className="bg-bg-surface border border-border rounded-lg p-8 text-center text-text-muted shadow-sm">
+              No active incidents. All monitored systems are clear.
             </div>
-          ))}
+          )}
+          {!isLoading &&
+            sortedActive.map((inc) => (
+              <div
+                key={inc._id}
+                className="bg-bg-surface border border-border rounded-lg p-5 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 shadow-sm"
+              >
+                <div className="flex items-start gap-3 min-w-0 flex-1">
+                  <span
+                    className={`px-2.5 py-1 rounded-md border text-xs font-bold shrink-0 mt-0.5 ${severityBadgeClass(inc.severity)}`}
+                  >
+                    {inc.severity}
+                  </span>
+                  <div className="min-w-0">
+                    <h4 className="text-text font-bold text-lg mb-1 break-words">{inc.title}</h4>
+                    <p className="text-text-muted text-md font-medium line-clamp-2">
+                      {inc.description || "No description provided."}
+                    </p>
+                    <p className="text-sm text-text-muted/80 mt-2">
+                      Updated {formatRelative(inc.updatedAt || inc.createdAt)}
+                    </p>
+                  </div>
+                </div>
+                <div className={`flex items-center gap-2 shrink-0 ${statusTextClass(inc)}`}>
+                  <span className="text-lg font-bold">{formatStatusLabel(inc.status)}</span>
+                </div>
+              </div>
+            ))}
         </div>
 
-        {/* Active Incidents */}
         <div className="w-full max-w-3xl">
-          <h3 className="text-md font-bold text-text-muted uppercase mb-4">
-            Active Incidents
-          </h3>
-          <div className="bg-bg-surface border border-border rounded-xl p-5 flex items-start gap-4 shadow-sm">
-            <span className="px-2.5 py-1 rounded-md border border-ring/30 bg-ring/10 text-ring text-xs font-bold shrink-0 mt-0.5">
-              P2
-            </span>
-            <div>
-              <h4 className="text-text font-bold text-lg mb-1">
-                Stripe Webhook Processing Latency
-              </h4>
-              <p className="text-text-muted text-md font-medium">
-                Team is investigating. ETA: 30 minutes.
-              </p>
-            </div>
+          <h3 className="text-md font-bold text-text-muted uppercase mb-4">Summary</h3>
+          <div className="bg-bg-surface border border-border rounded-xl p-5 shadow-sm text-text-muted text-md space-y-2">
+            <p>
+              <span className="font-bold text-text">{activeIncidents.length}</span> active incident
+              {activeIncidents.length === 1 ? "" : "s"}
+            </p>
+            <p>
+              <span className="font-bold text-text">{incidents.filter((i) => i.status === "RESOLVED").length}</span>{" "}
+              resolved (total in workspace)
+            </p>
           </div>
         </div>
       </div>
-      
-      <DeclareIncidentModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+
+      {isPrivileged && (
+        <DeclareIncidentModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onIncidentCreated={fetchIncidents}
+        />
+      )}
     </div>
   );
 };

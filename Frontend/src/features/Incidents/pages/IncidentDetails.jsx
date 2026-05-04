@@ -1,55 +1,283 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router";
 import { GoStopwatch } from "react-icons/go";
+import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
 import Button from "../../../shared/components/Button";
+import { api } from "../../../api/httpClient";
+import { useWorkspacePaths } from "../hooks/useWorkspacePaths";
+import { canManageWorkspace } from "../../../lib/workspacePaths";
+
+const formatStatusLabel = (status = "") => {
+  if (status === "OPEN") return "Open";
+  if (status === "INVESTIGATING") return "Investigating";
+  if (status === "RESOLVED") return "Resolved";
+  return status;
+};
+
+const formatDateTime = (value) => {
+  if (!value) return "--";
+  return new Date(value).toLocaleString();
+};
+
+const toElapsedTime = (incident, nowTs) => {
+  if (!incident?.createdAt) return "--";
+  const startTs = new Date(incident.createdAt).getTime();
+  const endTs =
+    incident.status === "RESOLVED" && incident.resolvedAt
+      ? new Date(incident.resolvedAt).getTime()
+      : nowTs;
+  const diffMs = Math.max(0, endTs - startTs);
+  const totalSeconds = Math.floor(diffMs / 1000);
+  const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
+  const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
+  const seconds = String(totalSeconds % 60).padStart(2, "0");
+  return `${hours}:${minutes}:${seconds}`;
+};
+
+const normalizeActionItems = (actionItems) => {
+  if (Array.isArray(actionItems)) return actionItems;
+  if (typeof actionItems !== "string") return [];
+
+  return actionItems
+    .split("\n")
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .map((item) => item.replace(/^\d+\.\s*/, ""));
+};
 
 const IncidentDetails = () => {
   const { id } = useParams();
+  const user = useSelector((state) => state.auth.user);
+  const paths = useWorkspacePaths();
+  const isPrivileged = canManageWorkspace(user?.role);
+  const [incident, setIncident] = useState(null);
+  const [timeline, setTimeline] = useState([]);
+  const [postmortem, setPostmortem] = useState(null);
+  const [companyMembers, setCompanyMembers] = useState([]);
+  const [selectedResponderId, setSelectedResponderId] = useState("");
+  const [timelineMessage, setTimelineMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [isPostingTimeline, setIsPostingTimeline] = useState(false);
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const [isGeneratingPostmortem, setIsGeneratingPostmortem] = useState(false);
+  const [isAssigningResponder, setIsAssigningResponder] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [nowTs, setNowTs] = useState(Date.now());
+
+  useEffect(() => {
+    const timer = setInterval(() => setNowTs(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const fetchIncidentDetails = async () => {
+    try {
+      setIsLoading(true);
+      setErrorMessage("");
+
+      const [incidentRes, timelineRes] = await Promise.all([
+        api.get(`/incidents/${id}`),
+        api.get(`/timeline/${id}`),
+      ]);
+
+      setIncident(incidentRes?.data?.incident || null);
+      setTimeline(timelineRes?.data?.timeline || []);
+
+      try {
+        const postmortemRes = await api.get(`/incidents/${id}/postmortem`);
+        setPostmortem(postmortemRes?.data?.postmortem || null);
+      } catch {
+        setPostmortem(null);
+      }
+
+      try {
+        const membersRes = await api.get("/company/members");
+        setCompanyMembers(membersRes?.data?.members || []);
+      } catch {
+        setCompanyMembers([]);
+      }
+    } catch (error) {
+      setErrorMessage(error?.message || "Failed to fetch incident details.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (id) {
+      fetchIncidentDetails();
+    }
+  }, [id]);
+
+  const responderList = useMemo(() => {
+    if (!incident) return [];
+    const map = new Map();
+    const users = [...(incident.assignedUsers || []), incident.createdBy].filter(Boolean);
+    users.forEach((u) => {
+      if (u?._id && !map.has(u._id)) {
+        map.set(u._id, u);
+      }
+    });
+    return Array.from(map.values());
+  }, [incident]);
+
+  const handleStatusUpdate = async (status) => {
+    if (!incident || status === incident.status) return;
+    try {
+      setIsUpdatingStatus(true);
+      const response = await api.patch(`/incidents/${id}/status`, { status });
+      setIncident(response?.data?.incident || incident);
+      toast.success("Incident status updated");
+    } catch (error) {
+      toast.error(error?.message || "Failed to update status");
+    } finally {
+      setIsUpdatingStatus(false);
+    }
+  };
+
+  const handlePostTimeline = async () => {
+    const trimmed = timelineMessage.trim();
+    if (!trimmed) return;
+
+    try {
+      setIsPostingTimeline(true);
+      await api.post(`/timeline/${id}`, { message: trimmed });
+      setTimelineMessage("");
+      await fetchIncidentDetails();
+      toast.success("Timeline updated");
+    } catch (error) {
+      toast.error(error?.message || "Failed to post timeline update");
+    } finally {
+      setIsPostingTimeline(false);
+    }
+  };
+
+  const handleGeneratePostmortem = async () => {
+    try {
+      setIsGeneratingPostmortem(true);
+      const response = await api.post(`/incidents/${id}/postmortem`);
+      setPostmortem(response?.data?.postmortem || null);
+      toast.success("Postmortem generated");
+    } catch (error) {
+      toast.error(error?.message || "Failed to generate postmortem");
+    } finally {
+      setIsGeneratingPostmortem(false);
+    }
+  };
+
+  const handleAssignResponder = async () => {
+    if (!selectedResponderId) {
+      toast.error("Please select a responder");
+      return;
+    }
+
+    const existingUserIds = (incident?.assignedUsers || [])
+      .map((member) => member?._id)
+      .filter(Boolean);
+
+    if (existingUserIds.includes(selectedResponderId)) {
+      toast.error("This responder is already assigned");
+      return;
+    }
+
+    try {
+      setIsAssigningResponder(true);
+      await api.post(`/incidents/${id}/assign`, {
+        userIds: [...existingUserIds, selectedResponderId],
+      });
+      setSelectedResponderId("");
+      await fetchIncidentDetails();
+      toast.success("Responder assigned. Assignment email sent.");
+    } catch (error) {
+      toast.error(error?.message || "Failed to assign responder");
+    } finally {
+      setIsAssigningResponder(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex-1 overflow-y-auto bg-bg p-8 w-full h-full text-text-muted text-lg">
+        Loading incident details...
+      </div>
+    );
+  }
+
+  if (errorMessage || !incident) {
+    return (
+      <div className="flex-1 overflow-y-auto bg-bg p-8 w-full h-full">
+        <Link
+          to={paths.incidents}
+          className="px-3 py-1.5 rounded-lg border border-border text-sm font-bold text-text-muted hover:text-text hover:bg-bg-surface transition-colors inline-flex items-center gap-2 mb-6"
+        >
+          ← Back
+        </Link>
+        <p className="text-error text-lg">{errorMessage || "Incident not found."}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 overflow-y-auto bg-bg p-8 w-full h-full">
       {/* Top Breadcrumb */}
       <div className="flex items-center gap-3 mb-6">
         <Link
-          to="/admin/incidents"
+          to={paths.incidents}
           className="px-3 py-1.5 rounded-lg border border-border text-sm font-bold text-text-muted hover:text-text hover:bg-bg-surface transition-colors flex items-center gap-2">
           ← Back
         </Link>
         <span className="text-lg font-bold text-text-muted">
-          {id || "INC-29402"}
+          {id}
         </span>
       </div>
 
       {/* Header Info */}
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-text mb-4">
-          API Gateway Timeout Escalation
+          {incident.title}
         </h1>
         <div className="flex items-center gap-3">
-          <span className="px-4 py-2 rounded-lg border border-error/30 bg-error/5 text-error text-sm font-bold">
-            P1 Critical
+          <span className={`px-4 py-2 rounded-lg border text-sm font-bold ${
+            incident.severity === "P1"
+              ? "border-error/30 bg-error/5 text-error"
+              : incident.severity === "P2"
+                ? "border-ring/30 bg-ring/5 text-ring"
+                : "border-success/30 bg-success/5 text-success"
+          }`}>
+            {incident.severity}
           </span>
-          <span className="px-3 py-1 rounded-lg bg-ring/10 text-ring text-md font-bold flex items-center gap-1.5">
-            Investigating
+          <span className={`px-3 py-1 rounded-lg text-md font-bold flex items-center gap-1.5 ${
+            incident.status === "INVESTIGATING"
+              ? "bg-ring/10 text-ring"
+              : incident.status === "OPEN"
+                ? "bg-error/10 text-error"
+                : "bg-success/10 text-success"
+          }`}>
+            {formatStatusLabel(incident.status)}
           </span>
           <span className="text-lg text-text-muted font-mono flex items-center gap-2">
-            <GoStopwatch className="inline-block" size={20} /> 00:42:15 elapsed
+            <GoStopwatch className="inline-block" size={20} /> {toElapsedTime(incident, nowTs)} elapsed
           </span>
 
-          <select className="bg-bg-surface border border-border rounded-lg px-3 py-1.5 text-sm font-bold text-text focus:outline-none focus:border-primary transition-colors appearance-none ml-2">
-            <option>Investigating</option>
-            <option>Open</option>
-            <option>Resolved</option>
-          </select>
+          {isPrivileged && (
+            <select
+              value={incident.status}
+              onChange={(e) => handleStatusUpdate(e.target.value)}
+              disabled={isUpdatingStatus}
+              className="bg-bg-surface border border-border rounded-lg px-3 py-1.5 text-sm font-bold text-text focus:outline-none focus:border-primary transition-colors appearance-none ml-2"
+            >
+              <option value="INVESTIGATING">Investigating</option>
+              <option value="OPEN">Open</option>
+              <option value="RESOLVED">Resolved</option>
+            </select>
+          )}
         </div>
       </div>
 
       {/* Description Box */}
       <div className="bg-bg-surface border border-border rounded-lg p-5 mb-8 shadow-sm">
         <p className="text-md text-text font-medium leading-relaxed">
-          Detecting unusual traffic spikes from region us-east-1 originating
-          from internal microservice 'Checkout-Beta'. Timeouts peaked at 12.5s.
-          Connection pool showing signs of exhaustion.
+          {incident.description}
         </p>
       </div>
 
@@ -62,88 +290,47 @@ const IncidentDetails = () => {
           </h3>
 
           <div className="flex flex-col gap-6 relative before:absolute before:inset-y-0 before:left-4 before:w-[2px] before:bg-border mb-8">
-            {/* Entry 1 */}
-            <div className="relative pl-12">
-              <div className="absolute left-0 w-8 h-8 rounded-full border-2 border-bg bg-error/10 text-error flex items-center justify-center font-bold text-xs ring-2 ring-error/20 z-10">
-                R
-              </div>
-              <div className="bg-bg-surface border border-border rounded-lg p-5 shadow-sm">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-lg font-bold text-text">
-                    Rahul Sharma
-                  </span>
-                  <span className="text-sm font-bold text-text-muted uppercase">
-                    Admin
-                  </span>
+            {timeline.map((entry) => {
+              const name = entry?.postedBy?.name || "Unknown";
+              const initials = name.charAt(0).toUpperCase();
+              return (
+                <div key={entry._id} className="relative pl-12">
+                  <div className="absolute left-0 w-8 h-8 rounded-full border-2 border-bg bg-primary/10 text-primary flex items-center justify-center font-bold text-xs ring-2 ring-primary/20 z-10">
+                    {initials}
+                  </div>
+                  <div className="bg-bg-surface border border-border rounded-lg p-5 shadow-sm">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-lg font-bold text-text">{name}</span>
+                    </div>
+                    <p className="text-md text-text-muted mb-2">{entry.message}</p>
+                    <span className="text-sm text-text-muted/70 font-mono">
+                      {formatDateTime(entry.createdAt)}
+                    </span>
+                  </div>
                 </div>
-                <p className="text-md text-text-muted mb-2">
-                  Incident created. Payment service not responding from
-                  us-east-1. Pulling logs now.
-                </p>
-                <span className="text-sm text-text-muted/70 font-mono">
-                  10:02:14 PM
-                </span>
-              </div>
-            </div>
+              );
+            })}
 
-            {/* Entry 2 */}
-            <div className="relative pl-12">
-              <div className="absolute left-0 w-8 h-8 rounded-full border-2 border-bg bg-primary/10 text-primary flex items-center justify-center font-bold text-xs ring-2 ring-primary/20 z-10">
-                P
-              </div>
-              <div className="bg-bg-surface border border-border rounded-lg p-5 shadow-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-lg font-bold text-text">
-                    Priya Singh
-                  </span>
-                  <span className="text-sm font-bold text-text-muted uppercase">
-                    Member
-                  </span>
-                </div>
-                <p className="text-md text-text-muted mb-2">
-                  DB connections maxed out. Found N+1 query issue in
-                  order-service v2.3.1. This was introduced in today's
-                  deployment.
-                </p>
-                <span className="text-sm text-text-muted/70 font-mono">
-                  10:15:30 PM
-                </span>
-              </div>
-            </div>
-
-            {/* Entry 3 */}
-            <div className="relative pl-12">
-              <div className="absolute left-0 w-8 h-8 rounded-full border-2 border-bg bg-success/10 text-success flex items-center justify-center font-bold text-xs ring-2 ring-success/20 z-10">
-                S
-              </div>
-              <div className="bg-bg-surface border border-border rounded-lg p-5 shadow-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-lg font-bold text-text">
-                    Sahil Verma
-                  </span>
-                  <span className="text-[10px] font-bold text-text-muted uppercase">
-                    Member
-                  </span>
-                </div>
-                <p className="text-md text-text-muted mb-2">
-                  Initiated rollback of order-service to v2.2.8. ETA 8 minutes.
-                  Monitoring load balancer health.
-                </p>
-                <span className="text-sm text-text-muted/70 font-mono">
-                  10:28:05 PM
-                </span>
-              </div>
-            </div>
+            {timeline.length === 0 && (
+              <div className="text-text-muted text-md pl-1">No timeline updates yet.</div>
+            )}
           </div>
 
           {/* New Post Input */}
           <div className="relative">
             <input
+              value={timelineMessage}
+              onChange={(e) => setTimelineMessage(e.target.value)}
               type="text"
               placeholder="Post an update to the timeline..."
               className="w-full bg-input border border-border rounded-lg px-4 py-4 pr-24 text-lg font-medium text-text placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors shadow-lg"
             />
-            <Button size="sm" className="absolute right-2 top-2 bottom-2 px-6 rounded-md text-md">
+            <Button
+              size="sm"
+              isLoading={isPostingTimeline}
+              onClick={handlePostTimeline}
+              className="absolute right-2 top-2 bottom-2 px-6 rounded-md text-md"
+            >
               Post
             </Button>
           </div>
@@ -167,21 +354,29 @@ const IncidentDetails = () => {
                 Root Cause
               </h4>
               <p className="text-sm text-text leading-relaxed mb-4">
-                N+1 query in order-service v2.3.1 caused DB connection pool
-                exhaustion. Deployed at 09:45 PM without load testing.
+                {postmortem?.rootCause || "No postmortem generated yet."}
               </p>
 
               <h4 className="text-md font-bold text-error uppercase tracking-wider mb-1">
                 Action Items
               </h4>
               <ol className="text-md text-text leading-relaxed list-decimal pl-4 mb-5">
-                <li>Roll back to v2.2.8</li>
-                <li>Add query optimization</li>
-                <li>Load test before deploy</li>
+                {normalizeActionItems(postmortem?.actionItems).map((item, index) => (
+                    <li key={`${item}-${index}`}>{item}</li>
+                  ))}
+                {!normalizeActionItems(postmortem?.actionItems).length && <li>Generate postmortem to see action items.</li>}
               </ol>
-              <Button variant="ghost" size="full" className="border border-error/20 text-error hover:bg-error bg-error/10 hover:text-text text-lg cursor-pointer font-bold flex items-center justify-center gap-2">
-                Regenerate Postmortem
-              </Button>
+              {isPrivileged && (
+                <Button
+                  variant="ghost"
+                  size="full"
+                  isLoading={isGeneratingPostmortem}
+                  onClick={handleGeneratePostmortem}
+                  className="border border-error/20 text-error hover:bg-error bg-error/10 hover:text-text text-lg cursor-pointer font-bold flex items-center justify-center gap-2"
+                >
+                  Regenerate Postmortem
+                </Button>
+              )}
             </div>
           </div>
 
@@ -191,47 +386,47 @@ const IncidentDetails = () => {
               Active Responders
             </h3>
             <div className="flex flex-col gap-2 mb-4">
-              <div className="bg-bg-surface border border-border rounded-lg p-3 flex items-center gap-3 shadow-sm">
-                <div className="w-10 h-10 rounded-full bg-error/10 text-error flex items-center justify-center font-bold text-md">
-                  R
-                </div>
-                <div>
-                  <div className="text-md font-bold text-text">
-                    Rahul Sharma
+              {responderList.map((user) => (
+                <div key={user._id} className="bg-bg-surface border border-border rounded-lg p-3 flex items-center gap-3 shadow-sm">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-md">
+                    {(user?.name || "U").charAt(0).toUpperCase()}
                   </div>
-                  <div className="text-sm font-semibold text-text-muted">
-                    Admin • Online
+                  <div>
+                    <div className="text-md font-bold text-text">{user?.name || "Unknown"}</div>
+                    <div className="text-sm font-semibold text-text-muted">{user?.email}</div>
                   </div>
                 </div>
-              </div>
-              <div className="bg-bg-surface border border-border rounded-lg p-3 flex items-center gap-3 shadow-sm">
-                <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-md">
-                  P
-                </div>
-                <div>
-                  <div className="text-md font-bold text-text">Priya Singh</div>
-                  <div className="text-sm font-semibold text-text-muted">
-                    Member • Online
-                  </div>
-                </div>
-              </div>
-              <div className="bg-bg-surface border border-border rounded-lg p-3 flex items-center gap-3 shadow-sm">
-                <div className="w-10 h-10 rounded-full bg-success/10 text-success flex items-center justify-center font-bold text-md">
-                  S
-                </div>
-                <div>
-                  <div className="text-md font-bold text-text">Sahil Verma</div>
-                  <div className="text-sm font-semibold text-text-muted">
-                    Member • Away
-                  </div>
-                </div>
-              </div>
+              ))}
+              {responderList.length === 0 && (
+                <div className="text-text-muted text-sm">No responders assigned.</div>
+              )}
             </div>
-            <input
-              type="text"
-              placeholder="Assign a new responder here..."
-              className="w-full bg-input border border-border rounded-lg px-4 py-4 text-md text-text placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors shadow-sm"
-            />
+            {isPrivileged && (
+              <div className="flex gap-2">
+                <select
+                  value={selectedResponderId}
+                  onChange={(e) => setSelectedResponderId(e.target.value)}
+                  disabled={isAssigningResponder}
+                  className="w-full bg-input border border-border rounded-lg px-4 py-4 text-md text-text focus:outline-none focus:border-primary transition-colors shadow-sm"
+                >
+                  <option value="">Assign responder from company members...</option>
+                  {companyMembers.map((member) => (
+                    <option key={member._id} value={member._id}>
+                      {member.name} ({member.role}) - {member.email}
+                    </option>
+                  ))}
+                </select>
+                <Button
+                  size="sm"
+                  isLoading={isAssigningResponder}
+                  onClick={handleAssignResponder}
+                  disabled={!selectedResponderId}
+                  className="px-4 whitespace-nowrap"
+                >
+                  Assign
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* Incident Info */}
@@ -242,23 +437,30 @@ const IncidentDetails = () => {
             <div className="flex flex-col gap-2 text-lg">
               <div className="flex justify-between">
                 <span className="text-text-muted">Created by</span>
-                <span className="text-text font-medium">Rahul Sharma</span>
+                <span className="text-text font-medium">{incident?.createdBy?.name || "--"}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-text-muted">Created at</span>
-                <span className="text-text font-medium">10:02 PM</span>
+                <span className="text-text font-medium">{formatDateTime(incident.createdAt)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-text-muted">Timeline events</span>
-                <span className="text-text font-medium">3</span>
+                <span className="text-text font-medium">{timeline.length}</span>
               </div>
               <div className="flex justify-between mb-4">
                 <span className="text-text-muted">Company</span>
-                <span className="text-text font-medium">Swiggy Eng</span>
+                <span className="text-text font-medium">{incident.companyId || "--"}</span>
               </div>
-              <Button size="full" className="font-bold rounded-lg flex items-center justify-center text-lg">
-                ✓ Mark as Resolved
-              </Button>
+              {isPrivileged && (
+                <Button
+                  size="full"
+                  isLoading={isUpdatingStatus}
+                  onClick={() => handleStatusUpdate("RESOLVED")}
+                  className="font-bold rounded-lg flex items-center justify-center text-lg"
+                >
+                  ✓ Mark as Resolved
+                </Button>
+              )}
             </div>
           </div>
         </div>

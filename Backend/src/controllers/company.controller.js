@@ -55,7 +55,7 @@ export const inviteMember = async (req, res, next) => {
     });
 
     const base = frontendOrigin() || "http://localhost:3000";
-    const inviteLink = `${base}/?token=${encodeURIComponent(token)}`;
+    const inviteLink = `${base}/accept-invite?token=${encodeURIComponent(token)}`;
 
     sendInviteEmail({
       to: email,
@@ -152,6 +152,9 @@ export const acceptInvite = async (req, res, next) => {
       isEmailVerified: true,
     });
 
+    user.lastLogin = new Date();
+    await user.save();
+
     await Company.findByIdAndUpdate(invite.companyId._id, {
       $push: { members: user._id },
     });
@@ -163,6 +166,14 @@ export const acceptInvite = async (req, res, next) => {
       userId: user._id,
       role: user.role,
       companyId: invite.companyId._id,
+    });
+
+    res.cookie("token", jwtToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: "/",
     });
 
     return res.status(201).json({
