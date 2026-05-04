@@ -15,7 +15,20 @@ import contactRoutes from "./routes/contact.routes.js";
 import { notFound, errorHandler } from "./middleware/error.middleware.js";
 
 const app = express();
-app.set("trust proxy", 1);
+// Render/other PaaS run behind reverse proxies, so trust X-Forwarded-* headers.
+const rawTrustProxy = process.env.TRUST_PROXY;
+let trustProxySetting;
+if (rawTrustProxy === undefined) {
+  trustProxySetting = process.env.NODE_ENV === "production" ? 1 : false;
+} else if (rawTrustProxy === "true") {
+  trustProxySetting = true;
+} else if (rawTrustProxy === "false") {
+  trustProxySetting = false;
+} else {
+  const asNumber = Number(rawTrustProxy);
+  trustProxySetting = Number.isNaN(asNumber) ? rawTrustProxy : asNumber;
+}
+app.set("trust proxy", trustProxySetting);
 app.use(cookieParser());
 
 app.use(helmet());
@@ -28,14 +41,14 @@ app.use(
 
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: Number(process.env.API_RATE_LIMIT_MAX) || 100000,
   standardHeaders: true,
   legacyHeaders: false,
 });
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 20,
+  max: Number(process.env.AUTH_RATE_LIMIT_MAX) || 10000,
   standardHeaders: true,
   legacyHeaders: false,
 });
