@@ -5,7 +5,10 @@ import { SiOpslevel } from "react-icons/si";
 import { useTheme } from "../../features/Theme/hooks/useTheme";
 import { useSelector } from "react-redux";
 import { useAuth } from "../../features/Authentication/hook/useAuth";
-import { defaultWorkspaceHome, canManageWorkspace } from "../../lib/workspacePaths";
+import {
+  defaultWorkspaceHome,
+  canManageWorkspace,
+} from "../../lib/workspacePaths";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -38,11 +41,11 @@ const Navbar = () => {
     () => [
       { name: "Home", path: "/" },
       { name: "Incidents", path: incidentsPath },
-      { name: "Status", path: "/status" },
       { name: "Docs", path: "/docs" },
       { name: "About Us", path: "/about" },
+      { name: "Contact Us", path: "/contact" },
     ],
-    [incidentsPath]
+    [incidentsPath],
   );
 
   return (
@@ -74,7 +77,9 @@ const Navbar = () => {
                   key={link.name}
                   to={link.path}
                   className={({ isActive }) =>
-                    isActive ? "text-primary -translate-y-0.5" : "text-text-muted"
+                    isActive
+                      ? "text-primary -translate-y-0.5"
+                      : "text-text-muted"
                   }>
                   {link.name}
                 </NavLink>
@@ -132,11 +137,11 @@ const Navbar = () => {
                 </div>
               </div>
             ) : (
-               <NavLink
-                  to={"/login"}
-                  className={({ isActive }) =>
-                    isActive ? "text-primary" : "text-text-muted text-lg"
-                  }>
+              <NavLink
+                to={"/login"}
+                className={({ isActive }) =>
+                  isActive ? "text-primary" : "text-text-muted text-lg"
+                }>
                 Sign In
               </NavLink>
             )}
@@ -235,7 +240,7 @@ const Navbar = () => {
               <Link
                 to="/login"
                 onClick={() => setIsOpen(false)}
-                className="block w-full text-center bg-bg-surface text-primary border border-primary/30 px-4 py-2 rounded-full font-semibold hover:bg-primary/10 transition-colors mt-2">
+                className="block px-3 py-2 rounded-md text-base font-medium text-text-muted hover:text-primary hover:bg-bg-muted transition-colors">
                 Sign In
               </Link>
             )}

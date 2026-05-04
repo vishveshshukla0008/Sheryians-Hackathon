@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { canManageWorkspace } from "../../../lib/workspacePaths";
 import Button from "../../../shared/components/Button";
 import Input from "../../../shared/components/Input";
+import Loader from "../../../shared/components/Loader";
 import DeclareIncidentModal from "../components/DeclareIncidentModal";
 import { FiLink2 } from "react-icons/fi";
 import { PiHourglassHighFill } from "react-icons/pi";
@@ -37,7 +38,10 @@ const TeamManagement = () => {
         ? api.get("/company/invites/pending")
         : Promise.resolve({ data: { invites: [] } });
 
-      const [membersRes, invitesRes] = await Promise.all([membersPromise, invitesPromise]);
+      const [membersRes, invitesRes] = await Promise.all([
+        membersPromise,
+        invitesPromise,
+      ]);
 
       setMembers(membersRes?.data?.members || []);
       setPendingInvites(invitesRes?.data?.invites || []);
@@ -51,6 +55,8 @@ const TeamManagement = () => {
   useEffect(() => {
     fetchTeamData();
   }, []);
+
+  if (isLoadingData) return <Loader />;
 
   const sendInvite = async () => {
     const email = inviteEmail.trim().toLowerCase();
@@ -73,7 +79,7 @@ const TeamManagement = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-bg overflow-y-auto">
+    <div className="flex-1 flex flex-col min-h-0 bg-bg overflow-y-auto">
       {/* Top Header */}
       <div className="h-[80px] border-b border-border flex items-center justify-between px-8 shrink-0 bg-bg">
         <h1 className="text-2xl font-bold text-text">Team Management</h1>
@@ -103,7 +109,11 @@ const TeamManagement = () => {
           <p className="text-xl text-text-muted">
             Manage members and pending invitations
           </p>
-          {errorMessage && <p className="text-error mt-3 text-sm font-medium">{errorMessage}</p>}
+          {errorMessage && (
+            <p className="text-error mt-3 text-sm font-medium">
+              {errorMessage}
+            </p>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -113,11 +123,6 @@ const TeamManagement = () => {
               MEMBERS ({members.length})
             </h3>
             <div className="flex flex-col gap-3">
-              {isLoadingData && (
-                <div className="bg-bg-surface border border-border rounded-xl p-5 text-text-muted">
-                  Loading members...
-                </div>
-              )}
               {members.map((member) => (
                 <div
                   key={member._id}
@@ -154,9 +159,7 @@ const TeamManagement = () => {
           <div className="flex flex-col gap-8">
             {/* Invite Form */}
             <div className="bg-bg-surface border border-border rounded-xl p-6 shadow-sm">
-              <h3 className="text-xl font-bold text-text mb-1">
-                Invite mates
-              </h3>
+              <h3 className="text-xl font-bold text-text mb-1">Invite mates</h3>
               <p className="text-md font-medium text-text-muted mb-6">
                 They'll receive an email with a join link
               </p>
@@ -180,7 +183,9 @@ const TeamManagement = () => {
                 className="font-bold flex items-center justify-center gap-2 text-md">
                 Send Invitation
               </Button>
-              <p className="text-md font-bold text-error mt-2 ">*CEO/Admin can only invite others</p>
+              <p className="text-md font-bold text-error mt-2 ">
+                *CEO/Admin can only invite others
+              </p>
             </div>
 
             {/* Pending Invites section for checking people who are accepted are not  */}
@@ -189,11 +194,6 @@ const TeamManagement = () => {
                 PENDING INVITES
               </h3>
               <div className="flex flex-col gap-3">
-                {isLoadingData && (
-                  <div className="bg-bg-surface rounded-xl p-4 text-text-muted shadow-sm">
-                    Loading pending invites...
-                  </div>
-                )}
                 {pendingInvites.map((invite) => (
                   <div
                     key={invite._id}

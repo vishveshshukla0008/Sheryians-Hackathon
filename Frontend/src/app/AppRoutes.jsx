@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes, Navigate } from "react-router";
-import EmailVerificationPage from "../features/Authentication/pages/EmailVerificationPage"
+import EmailVerificationPage from "../features/Authentication/pages/EmailVerificationPage";
 import RootLayout from "../layouts/RootLayout";
 import Authlayout from "../layouts/Authlayout";
 import IncidentLayout from "../layouts/IncidentLayout";
@@ -40,6 +40,7 @@ import ErrorCodes from "../pages/Docs/developer/ErrorCodes";
 import RateLimits from "../pages/Docs/developer/RateLimits";
 import VerifyEmailPage from "../features/Authentication/pages/VerifyEmailPage";
 import AcceptInvitePage from "../features/Authentication/pages/AcceptInvitePage";
+import Contact from "../pages/Contact";
 
 const AppRoutes = () => {
   return (
@@ -50,26 +51,26 @@ const AppRoutes = () => {
           <Route index element={<HomePage />} />
           <Route path="about" element={<About />} />
           <Route path="profile" element={<UserProfile />} />
+          <Route path="contact" element={<Contact />} />
+        </Route>
 
-          {/* DOCS */}
-          <Route path="/docs" element={<DocsLayout />}>
-            <Route index element={<Docs />} />
-            <Route path="quick-start" element={<QuickStart />} />
-            <Route path="first-incident" element={<FirstIncident />} />
-            <Route path="incidents" element={<Incidents />} />
-            <Route path="workspaces" element={<Workspaces />} />
-            <Route path="members" element={<MembersRoles />} />
-            <Route path="timeline" element={<TimelineUpdates />} />
-            <Route path="status" element={<StatusPage />} />
-            <Route path="postmortem" element={<AIPostmortem />} />
-            <Route path="email" element={<EmailNotifications />} />
-            <Route path="slack" element={<SlackIntegration />} />
-            <Route path="api" element={<APIReference />} />
-            <Route path="auth" element={<Authentication />} />
-            <Route path="errors" element={<ErrorCodes />} />
-            <Route path="rate-limits" element={<RateLimits />} />
-            <Route path="sdk" element={<SDK />} />
-          </Route>
+        <Route path="/docs" element={<DocsLayout />}>
+          <Route index element={<Docs />} />
+          <Route path="quick-start" element={<QuickStart />} />
+          <Route path="first-incident" element={<FirstIncident />} />
+          <Route path="incidents" element={<Incidents />} />
+          <Route path="workspaces" element={<Workspaces />} />
+          <Route path="members" element={<MembersRoles />} />
+          <Route path="timeline" element={<TimelineUpdates />} />
+          <Route path="status" element={<StatusPage />} />
+          <Route path="postmortem" element={<AIPostmortem />} />
+          <Route path="email" element={<EmailNotifications />} />
+          <Route path="slack" element={<SlackIntegration />} />
+          <Route path="api" element={<APIReference />} />
+          <Route path="auth" element={<Authentication />} />
+          <Route path="errors" element={<ErrorCodes />} />
+          <Route path="rate-limits" element={<RateLimits />} />
+          <Route path="sdk" element={<SDK />} />
         </Route>
         {/* Auth Routes with AUTHLAYOUT */}
         <Route element={<Authlayout />}>

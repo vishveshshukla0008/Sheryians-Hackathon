@@ -33,10 +33,16 @@ const IncidentLayout = () => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
+      if (
+        profileMenuRef.current &&
+        !profileMenuRef.current.contains(event.target)
+      ) {
         setIsProfileMenuOpen(false);
       }
-      if (topProfileRef.current && !topProfileRef.current.contains(event.target)) {
+      if (
+        topProfileRef.current &&
+        !topProfileRef.current.contains(event.target)
+      ) {
         setIsTopProfileOpen(false);
       }
     };
@@ -73,7 +79,8 @@ const IncidentLayout = () => {
 
   const adminNav = [{ name: "Team", path: paths.team, icon: FiUsers }];
 
-  const companyLabel = user?.companyId?.name || user?.company?.name || "Workspace";
+  const companyLabel =
+    user?.companyId?.name || user?.company?.name || "Workspace";
 
   return (
     <>
@@ -89,26 +96,33 @@ const IncidentLayout = () => {
           },
         }}
       />
-      <div className="flex h-screen bg-bg text-text overflow-hidden">
-        <aside className="w-65 bg-bg border-r border-border flex flex-col shrink-0">
+      <div className="flex min-h-screen flex-col lg:flex-row bg-bg text-text overflow-hidden">
+        <aside className="w-full lg:w-65 bg-bg border-b border-border lg:border-b-0 lg:border-r flex flex-col shrink-0">
           <div className="h-20 flex items-center px-6 border-b border-border shrink-0">
             <div className="flex items-center justify-center mr-3">
               <SiOpslevel size={30} />
             </div>
             <div>
-              <h1 className="text-text font-bold text-lg leading-tight tracking-wide">MayDayOps</h1>
-              <p className="text-text-muted text-sm font-bold mt-0.5">Incident Management</p>
+              <h1 className="text-text font-bold text-lg leading-tight tracking-wide">
+                MayDayOps
+              </h1>
+              <p className="text-text-muted text-sm font-bold mt-0.5">
+                Incident Management
+              </p>
             </div>
           </div>
 
           <div className="flex-1 overflow-y-auto py-5 flex flex-col gap-6 px-3 text-lg">
             <div>
-              <h3 className="text-md font-bold text-text-muted uppercase px-3 mb-2">Main</h3>
+              <h3 className="text-md font-bold text-text-muted uppercase px-3 mb-2">
+                Main
+              </h3>
               <nav className="flex flex-col gap-1">
                 {mainNav.map((link) => {
                   const isActive =
                     location.pathname === link.path ||
-                    (link.path.endsWith("/incidents") && location.pathname.startsWith(link.path + "/"));
+                    (link.path.endsWith("/incidents") &&
+                      location.pathname.startsWith(link.path + "/"));
                   const Icon = link.icon;
                   return (
                     <Link
@@ -136,7 +150,9 @@ const IncidentLayout = () => {
 
             {isPrivileged && (
               <div>
-                <h3 className="text-md font-bold text-text-muted uppercase px-3 mb-2">Admin</h3>
+                <h3 className="text-md font-bold text-text-muted uppercase px-3 mb-2">
+                  Admin
+                </h3>
                 <nav className="flex flex-col gap-1">
                   {adminNav.map((link) => {
                     const isActive = location.pathname === link.path;
@@ -163,7 +179,9 @@ const IncidentLayout = () => {
 
             {!isPrivileged && (
               <div>
-                <h3 className="text-md font-bold text-text-muted uppercase px-3 mb-2">Team</h3>
+                <h3 className="text-md font-bold text-text-muted uppercase px-3 mb-2">
+                  Team
+                </h3>
                 <nav className="flex flex-col gap-1">
                   <Link
                     to={paths.team}
@@ -190,7 +208,9 @@ const IncidentLayout = () => {
                   {(user?.name || "?").charAt(0).toUpperCase()}
                 </div>
                 <div className="flex-1 overflow-hidden text-left">
-                  <div className="text-sm font-bold text-text truncate">{user?.name || "User"}</div>
+                  <div className="text-sm font-bold text-text truncate">
+                    {user?.name || "User"}
+                  </div>
                   <div className="text-[10px] text-text-muted uppercase font-bold truncate">
                     {user?.role || "—"} · {companyLabel}
                   </div>
@@ -210,7 +230,7 @@ const IncidentLayout = () => {
           </div>
         </aside>
 
-        <div className="flex-1 flex flex-col h-screen overflow-hidden bg-bg min-h-0">
+        <div className="flex-1 flex flex-col min-h-0 overflow-hidden bg-bg">
           {hideTopNav && (
             <header className="h-14 border-b border-border flex items-center px-8 shrink-0 bg-bg">
               <PageBackButton fallbackPath={paths.dashboard} />
@@ -242,7 +262,9 @@ const IncidentLayout = () => {
                     Create Incident
                   </Link>
                 )}
-                <button type="button" className="text-text-muted hover:text-text transition-colors relative ml-3">
+                <button
+                  type="button"
+                  className="text-text-muted hover:text-text transition-colors relative ml-3">
                   <FiBell size={18} />
                   <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-error rounded-full border-2 border-bg" />
                 </button>
@@ -255,7 +277,9 @@ const IncidentLayout = () => {
                   </button>
                   {isTopProfileOpen && (
                     <div className="absolute top-full right-0 mt-2 w-56 bg-bg border border-border rounded-xl shadow-lg p-3 z-20">
-                      <div className="text-sm font-bold text-text truncate">{user?.name || "User"}</div>
+                      <div className="text-sm font-bold text-text truncate">
+                        {user?.name || "User"}
+                      </div>
                       <div className="text-xs text-text-muted uppercase font-bold mt-1 truncate">
                         {companyLabel}
                       </div>
