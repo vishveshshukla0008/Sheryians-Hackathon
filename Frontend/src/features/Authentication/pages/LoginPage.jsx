@@ -7,6 +7,7 @@ import { FiMail, FiLock, FiShield } from "react-icons/fi";
 import { useAuth } from "../hook/useAuth";
 import { useSelector } from "react-redux";
 import Loader from "../../../shared/components/Loader";
+import { defaultWorkspaceHome } from "../../../lib/workspacePaths";
 
 const LoginPage = () => {
   const { loginHandler } = useAuth();
@@ -36,9 +37,7 @@ const LoginPage = () => {
   };
 
   // if (authLoading) return <Loader/>;
-  if (user) return <Navigate to="/" replace />;
-
-  console.log(user)
+  if (user) return <Navigate to={defaultWorkspaceHome(user.role)} replace />;
 
   return (
     <div className="min-h-screen flex bg-bg relative overflow-hidden w-full">

@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Link, NavLink } from "react-router";
 import { FiMenu, FiX, FiSun, FiMoon } from "react-icons/fi";
 import { SiOpslevel } from "react-icons/si";
 import { useTheme } from "../../features/Theme/hooks/useTheme";
 import { useSelector } from "react-redux";
 import { useAuth } from "../../features/Authentication/hook/useAuth";
+import { defaultWorkspaceHome, canManageWorkspace } from "../../lib/workspacePaths";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -28,13 +29,21 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const navLinks = [
-    { name: "Home", path: "/" },
-    { name: "Incidents", path: "/admin/incidents" },
-    { name: "Status", path: "/status" },
-    { name: "Docs", path: "/docs" },
-    { name: "About Us", path: "/about" },
-  ];
+  const incidentsPath = useMemo(() => {
+    if (!user) return "/login";
+    return canManageWorkspace(user.role) ? "/admin/incidents" : "/incidents";
+  }, [user]);
+
+  const navLinks = useMemo(
+    () => [
+      { name: "Home", path: "/" },
+      { name: "Incidents", path: incidentsPath },
+      { name: "Status", path: "/status" },
+      { name: "Docs", path: "/docs" },
+      { name: "About Us", path: "/about" },
+    ],
+    [incidentsPath]
+  );
 
   return (
     <nav className="sticky top-0 z-50 bg-bg/80 backdrop-blur-md p-1">
@@ -74,7 +83,7 @@ const Navbar = () => {
 
             {user && (
               <Link
-                to="/dashboard"
+                to={defaultWorkspaceHome(user.role)}
                 className="bg-primary text-primary-foreground px-5 py-2 rounded-full font-semibold sm:text-lg hover:bg-primary/90 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
                 Dashboard
               </Link>
@@ -174,7 +183,7 @@ const Navbar = () => {
           {user && (
             <div className="pt-2 pb-2">
               <Link
-                to="/dashboard"
+                to={defaultWorkspaceHome(user.role)}
                 onClick={() => setIsOpen(false)}
                 className="block w-full text-center bg-primary text-primary-foreground px-4 py-2 rounded-full font-semibold hover:bg-primary/90 transition-colors">
                 Dashboard

@@ -40,7 +40,7 @@ router.post(
   inviteMember
 );
 
-router.get("/members", protect, authorize("ADMIN", "CEO"), getCompanyMembers);
+router.get("/members", protect, getCompanyMembers);
 router.get("/me", protect, getMyCompany);
 router.get("/invites/pending", protect, authorize("ADMIN", "CEO"), getPendingInvites);
 

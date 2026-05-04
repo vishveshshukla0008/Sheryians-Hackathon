@@ -7,6 +7,7 @@ import { FiUser, FiMail, FiLock, FiBriefcase } from "react-icons/fi";
 import { useAuth } from "../hook/useAuth";
 import { useSelector } from "react-redux";
 import Loader from "../../../shared/components/Loader";
+import { defaultWorkspaceHome } from "../../../lib/workspacePaths";
 
 const SignupPage = () => {
   const [submittedData, setSubmittedData] = useState(null);
@@ -33,7 +34,7 @@ const SignupPage = () => {
   });
 
   // if (authLoading) return <Loader />;
-  if (user) return <Navigate to="/" replace />;
+  if (user) return <Navigate to={defaultWorkspaceHome(user.role)} replace />;
 
   const onSubmit = async (data) => {
     try {
