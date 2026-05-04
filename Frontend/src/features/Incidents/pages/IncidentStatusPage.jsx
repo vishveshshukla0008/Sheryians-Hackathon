@@ -53,8 +53,6 @@ const IncidentStatusPage = () => {
     fetchIncidents();
   }, [fetchIncidents]);
 
-  if (isLoading) return <Loader />;
-
   const activeIncidents = useMemo(
     () => incidents.filter((i) => i.status !== "RESOLVED"),
     [incidents],
@@ -113,6 +111,8 @@ const IncidentStatusPage = () => {
     if (inc.status === "INVESTIGATING") return "text-ring";
     return "text-error";
   };
+
+  if (isLoading) return <Loader />;
 
   return (
     <div className="flex-1 flex flex-col min-h-0 bg-bg overflow-y-auto">
